@@ -1,0 +1,43 @@
+{
+  "name": "vue3.color.picker",
+  "private": false,
+  "version": "0.0.1",
+  "description": "A color picker component library",
+  "main": "./dist/color-picker-component.umd.js",
+  "module": "./dist/color-picker-component.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/color-picker-component.esm.js",
+      "require": "./dist/color-picker-component.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "keywords": [
+    "vue",
+    "vue3",
+    "component",
+    "library",
+    "color",
+    "picker",
+    "gradient"
+  ],
+  "author": "Ceyhun Küçükali",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.6.3",
+    "vue": "^3.3.8"
+  }
+}
