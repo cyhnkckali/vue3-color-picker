@@ -8,7 +8,7 @@ const dval=ref()
 <template>
     <div>
         {{ dval }}
-        <ColorPicker v-model="dval" mode="solid" :showColorList="false" :showEyeDrop="false" />
+        <ColorPicker v-model="dval" mode="solid" :showColorList="false" :showEyeDrop="false" style="margin: 150px;" />
 
     </div>
 </template>

@@ -1521,6 +1521,7 @@ onMounted(() => {
 }
 
 .opacity-bar-background {
+    position: absolute;
     background:
         linear-gradient(45deg,
             rgba(0, 0, 0, 0.18) 25%,
@@ -1543,6 +1544,7 @@ onMounted(() => {
     border-radius: 0.5rem;
     width: 100%;
     height: 14px;
+    z-index: 0;
 }
 
 .ck-cp-linear-angle-container {

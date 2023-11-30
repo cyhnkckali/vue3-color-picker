@@ -1,6 +1,6 @@
 {
   "name": "@cyhnkckali/vue3-color-picker",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A color picker component library",
   "type": "module",
   "files": [
