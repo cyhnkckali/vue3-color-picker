@@ -31,3 +31,14 @@ import {ColorPicker} from '@cyhnkckali/vue3-color-picker';
 ```
 import '@cyhnkckali/vue3-color-picker/dist/style.css'
 ``` 
+## Options
+
+| Parametre | Tip     | Açıklama                |
+| :-------- | :------- | :------------------------- |
+| `mode` | `string` | `solid` or `gradient` default `gradient`|
+| `showColorList` | `boolean` | default `true` |
+| `showEyeDrop` | `boolean` | default `true` Supports Chrome and Edge only |
+| `type` | `string` | Return colour value type `HEX8` `RGBA` `RGB` `HEX` default `HEX8`  |
+
+
+  
