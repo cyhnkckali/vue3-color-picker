@@ -3,11 +3,12 @@
         <div ref="pickerWrap" class="cp-picker-wrap" @mousedown="handlePickerStartOnMouseDown"
             @dragstart="handleItemDragStart">
             <canvas ref="canvas" class="colour-area"> </canvas>
+            <div class="colour-area-mask"></div>
             <div ref="pickerPointer" class="colour-area-point-circle"></div>
         </div>
 
-        <div class="ck-cp-menu">
-            <div class="ck-cp-controller-bar">
+        <div class="ck-cp-menu" :style="mode == 'gradient' ? '' : 'justify-content: end;'">
+            <div v-if="mode == 'gradient'" class="ck-cp-controller-bar ">
                 <button class="cp-btn" :class="gradientType == 'linear' ? 'active' : ''"
                     @click="setBackgroundType('linear')">
                     <i class="icon-right-up-down-up-arrow"></i>
@@ -28,23 +29,25 @@
                 </button>
             </div>
             <div class="ck-cp-controller-bar" style="display: inline-flex; justify-content: end">
-                <button v-if="isEyeDropperUsing" id="cp-btn-eyedropper" class="cp-btn" @click="handleOnClickEyeDropper">
+                <button v-if="isEyeDropperUsing && showEyeDrop" id="cp-btn-eyedropper" class="cp-btn"
+                    @click="handleOnClickEyeDropper">
                     <i class="icon-eye-dropper"></i>
                 </button>
                 <!-- NPM ARACI OLDUĞUNDA SET EDİLCEK RGB RGBA HEX -->
                 <!-- <button class="cp-btn" @click="handleOnClickEyeDropper">
                     <i class="icon-palette"></i>
                 </button> -->
-                <button class="cp-btn" @click="saveColor">
+                <button v-if="showColorList" class="cp-btn" @click="saveColor">
                     <i class="icon-flopy-disk"></i>
                 </button>
-                <button class="cp-btn" @click="deleteColor">
+                <button v-if="mode == 'gradient'" class="cp-btn" @click="deleteColor">
                     <i class="icon-trash"></i>
                 </button>
             </div>
         </div>
 
-        <div v-show="gradientType == 'linear' && isShowLinearAngleRange" class="ck-cp-linear-angle-container">
+        <div v-if="mode == 'gradient'" v-show="gradientType == 'linear' && isShowLinearAngleRange"
+            class="ck-cp-linear-angle-container">
             <div>
                 <p>
                     Angle <span>{{ gradientAngle.angle }}°</span>
@@ -53,7 +56,8 @@
             </div>
         </div>
 
-        <div v-show="gradientType == 'radial' && isShowRadialAngleRange" class="ck-cp-linear-angle-container">
+        <div v-if="mode == 'gradient'" v-show="gradientType == 'radial' && isShowRadialAngleRange"
+            class="ck-cp-linear-angle-container">
             <div>
                 <p>
                     Position X <span>{{ gradientAngle.percentageX }}%</span>
@@ -68,7 +72,8 @@
             </div>
         </div>
 
-        <div class="gradient-bar" @mousedown="handleGradientItemOnMouseDown" @dragstart="handleItemDragStart">
+        <div v-if="mode == 'gradient'" class="gradient-bar" @mousedown="handleGradientItemOnMouseDown"
+            @dragstart="handleItemDragStart">
             <div ref="gradientBar" class="gradient-container" @dblclick="addColor"></div>
 
             <!-- Target Created -->
@@ -116,31 +121,27 @@
             </div>
             <div class="ck-cp-input-content">
                 <span class="ck-cp-input-label">R</span>
-                <input type="number" min="0" max="255" v-model.number="
-                    colorList.find((item) => item.select == true).r
-                " @input="handleRGBAInput($event, 'r')" @keydown="handleRGBAOnKeydown" />
+                <input type="number" min="0" max="255" v-model.number="colorList.find((item) => item.select == true).r
+                    " @input="handleRGBAInput($event, 'r')" @keydown="handleRGBAOnKeydown" />
             </div>
             <div class="ck-cp-input-content">
                 <span class="ck-cp-input-label">G</span>
-                <input type="number" min="0" max="255" v-model.number="
-                    colorList.find((item) => item.select == true).g
-                " @input="handleRGBAInput($event, 'g')" @keydown="handleRGBAOnKeydown" />
+                <input type="number" min="0" max="255" v-model.number="colorList.find((item) => item.select == true).g
+                    " @input="handleRGBAInput($event, 'g')" @keydown="handleRGBAOnKeydown" />
             </div>
             <div class="ck-cp-input-content">
                 <span class="ck-cp-input-label">B</span>
-                <input type="number" min="0" max="255" v-model.number="
-                    colorList.find((item) => item.select == true).b
-                " @input="handleRGBAInput($event, 'b')" @keydown="handleRGBAOnKeydown" />
+                <input type="number" min="0" max="255" v-model.number="colorList.find((item) => item.select == true).b
+                    " @input="handleRGBAInput($event, 'b')" @keydown="handleRGBAOnKeydown" />
             </div>
             <div class="ck-cp-input-content">
                 <span class="ck-cp-input-label">A</span>
-                <input type="number" min="0" max="100" v-model.number="
-                    colorList.find((item) => item.select == true).a
-                " @input="handleRGBAInput($event, 'a')" @keydown="handleRGBAOnKeydown" />
+                <input type="number" min="0" max="100" v-model.number="colorList.find((item) => item.select == true).a
+                    " @input="handleRGBAInput($event, 'a')" @keydown="handleRGBAOnKeydown" />
             </div>
         </div>
 
-        <div v-if="localColorList.length > 0" class="ck-cp-local-color-conatiner">
+        <div v-if="localColorList.length > 0 && showColorList" class="ck-cp-local-color-conatiner">
             <div v-for="color in localColorList" :key="`color-${color}`" class="ck-cp-color-item"
                 :style="{ backgroundColor: color }" @click="handleColorItemOnClick(color)"></div>
         </div>
@@ -150,7 +151,7 @@
 <script setup>
 import { onMounted, onBeforeMount, ref, reactive } from 'vue'
 
-const props = defineProps(['modelValue'])
+const props = defineProps({modelValue:{default:null},mode:{default:'gradient'},showColorList:{default:true},showEyeDrop:{default:true},type:{default:'HEX8'}})
 const emits = defineEmits(['update:modelValue'])
 const colorList = ref([
     { id: 1, r: 68, g: 71, b: 119, a: 100, percent: 0, hue: 0, select: true },
@@ -266,44 +267,6 @@ const updatePickerPosition = (isNotUpdate) => {
     }
 }
 
-function hslToRgb(h, s, l) {
-    // Hue değerini 0 ile 360 arasına dönüştürün (istenirse 0 ile 1 arasında olabilir)
-    h = (h % 360) / 360
-
-    // Doygunluk ve Parlaklık değerlerini 0 ile 1 arasına sınırlayın
-    s = Math.min(1, Math.max(0, s))
-    l = Math.min(1, Math.max(0, l))
-
-    // RGB değerlerini hesaplayın
-    let r, g, b
-    if (s === 0) {
-        r = g = b = l
-    } else {
-        const hueToRgb = (p, q, t) => {
-            if (t < 0) t += 1
-            if (t > 1) t -= 1
-            if (t < 1 / 6) return p + (q - p) * 6 * t
-            if (t < 1 / 2) return q
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
-            return p
-        }
-
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s
-        const p = 2 * l - q
-
-        r = hueToRgb(p, q, h + 1 / 3)
-        g = hueToRgb(p, q, h)
-        b = hueToRgb(p, q, h - 1 / 3)
-    }
-
-    // RGB değerlerini 0 ile 255 arasına dönüştürün
-
-    r = Math.round(r * 255)
-    g = Math.round(g * 255)
-    b = Math.round(b * 255)
-
-    return { r, g, b }
-}
 
 // HUE FONKSİYONLARI
 const hue = ref(0)
@@ -318,45 +281,7 @@ const setHue = async (isUpdate) => {
     }, 0)
 }
 
-function hexToRgb(hex) {
-    try {
-        let val = hex
-            .replace(
-                /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
-                (m, r, g, b) => '#' + r + r + g + g + b + b,
-            )
-            .substring(1)
-            .match(/.{2}/g)
-            .map((x) => parseInt(x, 16))
 
-        let r = val[0]
-        let g = val[1]
-        let b = val[2]
-
-        if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
-            return null
-        } else if (r == undefined || g == undefined || b == undefined) {
-            return null
-        } else {
-            return {
-                r,
-                g,
-                b,
-            }
-        }
-    } catch (error) {
-        return null
-    }
-
-    // let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    // return result
-    //     ? {
-    //           r: parseInt(result[1], 16),
-    //           g: parseInt(result[2], 16),
-    //           b: parseInt(result[3], 16),
-    //       }
-    //     : null
-}
 
 const calculateSL = () => {
     let obj = { s: 0, l: 0 }
@@ -415,90 +340,6 @@ function findColorCoordinates() {
     coordinates.x = posx_inv
     coordinates.y = posy_inv
     return coordinates
-}
-
-const hsl2Rgb = (h, s, l) => {
-    s = s / 100
-    l = l / 100
-    let c, x, m, rgb
-    c = (1 - Math.abs(2 * l - 1)) * s
-    x = c * (1 - Math.abs(((h / 60) % 2) - 1))
-    m = l - c / 2
-    if (h >= 0 && h < 60) rgb = [c, x, 0]
-    if (h >= 60 && h < 120) rgb = [x, c, 0]
-    if (h >= 120 && h < 180) rgb = [0, c, x]
-    if (h >= 180 && h < 240) rgb = [0, x, c]
-    if (h >= 240 && h < 300) rgb = [x, 0, c]
-    if (h >= 300 && h <= 360) rgb = [c, 0, x]
-
-    return rgb.map(function (v) {
-        return (255 * (v + m)) | 0
-    })
-}
-
-const rgb2Hex = (r, g, b) => {
-    let rgb = b | (g << 8) | (r << 16)
-    return '#' + (0x1000000 + rgb).toString(16).slice(1)
-}
-
-const hsl2Hex = (h, s, l) => {
-    let rgb = hsl2Rgb(h, s, l)
-    return { rgb, hexA: rgb2Hex(rgb[0], rgb[1], rgb[2]) }
-}
-
-function rgbToHsl(r, g, b) {
-    let min,
-        max,
-        i,
-        l,
-        s,
-        maxcolor,
-        h,
-        rgb = []
-    rgb[0] = r / 255
-    rgb[1] = g / 255
-    rgb[2] = b / 255
-    min = rgb[0]
-    max = rgb[0]
-    maxcolor = 0
-    for (i = 0; i < rgb.length - 1; i++) {
-        if (rgb[i + 1] <= min) {
-            min = rgb[i + 1]
-        }
-        if (rgb[i + 1] >= max) {
-            max = rgb[i + 1]
-            maxcolor = i + 1
-        }
-    }
-    if (maxcolor == 0) {
-        h = (rgb[1] - rgb[2]) / (max - min)
-    }
-    if (maxcolor == 1) {
-        h = 2 + (rgb[2] - rgb[0]) / (max - min)
-    }
-    if (maxcolor == 2) {
-        h = 4 + (rgb[0] - rgb[1]) / (max - min)
-    }
-    if (isNaN(h)) {
-        h = 0
-    }
-    h = h * 60
-    if (h < 0) {
-        h = h + 360
-    }
-    l = (min + max) / 2
-    if (min == max) {
-        s = 0
-    } else {
-        if (l < 0.5) {
-            s = (max - min) / (max + min)
-        } else {
-            s = (max - min) / (2 - max - min)
-        }
-    }
-    // eslint-disable-next-line no-self-assign
-    s = s
-    return { h: h, s: s, l: l }
 }
 
 const handleHueChange = () => {
@@ -631,34 +472,7 @@ const addColor = (e) => {
 
 // Extra Funcs
 
-function rgbToHue(r, g, b) {
-    r = r / 255
-    g = g / 255
-    b = b / 255
-
-    const max = Math.max(r, g, b)
-    const min = Math.min(r, g, b)
-    let hue
-
-    if (max === r) {
-        hue = (g - b) / (max - min)
-    } else if (max === g) {
-        hue = 2 + (b - r) / (max - min)
-    } else {
-        hue = 4 + (r - g) / (max - min)
-    }
-
-    hue *= 60
-
-    if (hue < 0) {
-        hue += 360
-    }
-
-    if (Number.isNaN(hue)) hue = 0
-    return hue
-}
-
-function isColorInStrip(selectedColor) {
+const isColorInStrip=(selectedColor)=> {
     if (selectedColor.r == 0 && selectedColor.g == 0 && selectedColor.b == 0) {
         return true
     } else if (
@@ -731,6 +545,7 @@ const setFirstEmptyValue = () => {
 // SET ITEMS COLORS FUNCS
 
 const createGradientItem = (item) => {
+   if(props.mode=='gradient'){
     let el = document.createElement('div')
     el.id = `clr-gb-${item.id}`
     el.classList.add('gradient-handle')
@@ -745,6 +560,7 @@ const createGradientItem = (item) => {
     el.appendChild(elChild)
 
     gradientMouseBar.appendChild(el)
+   }
 }
 
 const redrawTheCanvas = (rgb) => {
@@ -756,14 +572,14 @@ const redrawTheCanvas = (rgb) => {
     context.fillRect(0, 0, endX, endY)
 
     let grdWhite = context.createLinearGradient(0, 0, endX - 12, 0)
-    grdWhite.addColorStop(0.035, 'rgb(255,255,255)')
-    grdWhite.addColorStop(1, 'rgba(255,255,255,0)')
+    grdWhite.addColorStop(0.01, 'rgb(255,255,255)')
+    grdWhite.addColorStop(0.75, 'rgba(255,255,255,0)')
     context.fillStyle = grdWhite
     context.fillRect(0, 0, endX, endY)
 
     let grdBlack = context.createLinearGradient(0, 0, 0, endY)
-    grdBlack.addColorStop(0.01, 'rgba(0,0,0,0)')
-    grdBlack.addColorStop(1, 'rgb(0,0,0)')
+    grdBlack.addColorStop(0.10, 'rgba(0,0,0,0)')
+    grdBlack.addColorStop(1, 'rgb(10,10,10)')
     context.fillStyle = grdBlack
     context.fillRect(0, 0, endX, endY)
 }
@@ -772,10 +588,11 @@ const setOpacityBarColor = () => {
     let colorItem = colorList.value.find((item) => item.select == true)
     opacitySlider.value.style.background = ` linear-gradient(90deg,rgba(255, 255, 255, 0) 0%, rgba(${
         colorItem.r
-    }, ${colorItem.g}, ${colorItem.b}, ${colorItem.a / 100}) 100%)`
+    }, ${colorItem.g}, ${colorItem.b}, 100) 100%)`
 }
 
 const setGradientBarColor = () => {
+    if(props.mode=="gradient"){
     colorList.value.sort((a, b) => {
         return a.percent - b.percent
     })
@@ -827,16 +644,39 @@ const setGradientBarColor = () => {
         }
     }
 
-    gradientBar.value.style.backgroundImage = barBackground
+    
 
-    let target = document.querySelector('#ck-cp-target-background')
-    target.style.backgroundImage = gradientBarBackgroundImage
-
-    if (isReady.value) {
+        gradientBar.value.style.backgroundImage = barBackground
+        
+        let target = document.querySelector('#ck-cp-target-background')
+        target.style.backgroundImage = gradientBarBackgroundImage
+        if (isReady.value) {
         emits('update:modelValue', target.style.backgroundImage)
     }
+    // document.body.style.backgroundImage = gradientBarBackgroundImage
+    }else{
+        const { r, g, b, a } = colorList.value[0]
+        let val =null
 
-    document.body.style.backgroundImage = gradientBarBackgroundImage
+        switch (props.type) {
+            case 'HEX8':
+            val= rgbaToHex8(r,g,b,a/100)
+                break;
+            case 'RGBA':
+            val= `rgba(${r},${g},${b},${a / 100})`
+                break;            
+            case 'RGB':
+            val= `rgb(${r},${g},${b})`
+                break;
+            case 'HEX':
+            val= rgb2Hex(r,g,b)
+                break;
+            default:
+                break;
+        }        
+        emits('update:modelValue', val)
+        // document.body.style.backgroundColor = val
+    }
 }
 
 const firstSetHue = () => {
@@ -1152,6 +992,214 @@ const parseVModelString = (value = '') => {
     }
 }
 
+
+// CONVERT FUNCS
+
+const rgbaToHex8=(r,g,b,a)=>{
+    function componentToHex(c) {
+    const hex = c.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }
+
+  const red = componentToHex(Math.round(r));
+  const green = componentToHex(Math.round(g));
+  const blue = componentToHex(Math.round(b));
+  const alpha = componentToHex(Math.round(a * 255));
+
+  return `#${red}${green}${blue}${alpha}`;
+}
+
+const hexToRgb=(hex)=> {
+    try {
+        let val = hex
+            .replace(
+                /^#?([a-f\d])([a-f\d])([a-f\d])$/i,
+                (m, r, g, b) => '#' + r + r + g + g + b + b,
+            )
+            .substring(1)
+            .match(/.{2}/g)
+            .map((x) => parseInt(x, 16))
+
+        let r = val[0]
+        let g = val[1]
+        let b = val[2]
+
+        if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) {
+            return null
+        } else if (r == undefined || g == undefined || b == undefined) {
+            return null
+        } else {
+            return {
+                r,
+                g,
+                b,
+            }
+        }
+    } catch (error) {
+        return null
+    }
+
+    // let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+    // return result
+    //     ? {
+    //           r: parseInt(result[1], 16),
+    //           g: parseInt(result[2], 16),
+    //           b: parseInt(result[3], 16),
+    //       }
+    //     : null
+}
+
+const rgbToHue=(r, g, b)=> {
+    r = r / 255
+    g = g / 255
+    b = b / 255
+
+    const max = Math.max(r, g, b)
+    const min = Math.min(r, g, b)
+    let hue
+
+    if (max === r) {
+        hue = (g - b) / (max - min)
+    } else if (max === g) {
+        hue = 2 + (b - r) / (max - min)
+    } else {
+        hue = 4 + (r - g) / (max - min)
+    }
+
+    hue *= 60
+
+    if (hue < 0) {
+        hue += 360
+    }
+
+    if (Number.isNaN(hue)) hue = 0
+    return hue
+}
+
+const hsl2Rgb = (h, s, l) => {
+    s = s / 100
+    l = l / 100
+    let c, x, m, rgb
+    c = (1 - Math.abs(2 * l - 1)) * s
+    x = c * (1 - Math.abs(((h / 60) % 2) - 1))
+    m = l - c / 2
+    if (h >= 0 && h < 60) rgb = [c, x, 0]
+    if (h >= 60 && h < 120) rgb = [x, c, 0]
+    if (h >= 120 && h < 180) rgb = [0, c, x]
+    if (h >= 180 && h < 240) rgb = [0, x, c]
+    if (h >= 240 && h < 300) rgb = [x, 0, c]
+    if (h >= 300 && h <= 360) rgb = [c, 0, x]
+
+    return rgb.map(function (v) {
+        return (255 * (v + m)) | 0
+    })
+}
+
+const rgb2Hex = (r, g, b) => {
+    let rgb = b | (g << 8) | (r << 16)
+    return '#' + (0x1000000 + rgb).toString(16).slice(1)
+}
+
+const hsl2Hex = (h, s, l) => {
+    let rgb = hsl2Rgb(h, s, l)
+    return { rgb, hexA: rgb2Hex(rgb[0], rgb[1], rgb[2]) }
+}
+
+const rgbToHsl=(r, g, b)=> {
+    let min,
+        max,
+        i,
+        l,
+        s,
+        maxcolor,
+        h,
+        rgb = []
+    rgb[0] = r / 255
+    rgb[1] = g / 255
+    rgb[2] = b / 255
+    min = rgb[0]
+    max = rgb[0]
+    maxcolor = 0
+    for (i = 0; i < rgb.length - 1; i++) {
+        if (rgb[i + 1] <= min) {
+            min = rgb[i + 1]
+        }
+        if (rgb[i + 1] >= max) {
+            max = rgb[i + 1]
+            maxcolor = i + 1
+        }
+    }
+    if (maxcolor == 0) {
+        h = (rgb[1] - rgb[2]) / (max - min)
+    }
+    if (maxcolor == 1) {
+        h = 2 + (rgb[2] - rgb[0]) / (max - min)
+    }
+    if (maxcolor == 2) {
+        h = 4 + (rgb[0] - rgb[1]) / (max - min)
+    }
+    if (isNaN(h)) {
+        h = 0
+    }
+    h = h * 60
+    if (h < 0) {
+        h = h + 360
+    }
+    l = (min + max) / 2
+    if (min == max) {
+        s = 0
+    } else {
+        if (l < 0.5) {
+            s = (max - min) / (max + min)
+        } else {
+            s = (max - min) / (2 - max - min)
+        }
+    }
+    // eslint-disable-next-line no-self-assign
+    s = s
+    return { h: h, s: s, l: l }
+}
+
+const hslToRgb=(h, s, l)=> {
+    // Hue değerini 0 ile 360 arasına dönüştürün (istenirse 0 ile 1 arasında olabilir)
+    h = (h % 360) / 360
+
+    // Doygunluk ve Parlaklık değerlerini 0 ile 1 arasına sınırlayın
+    s = Math.min(1, Math.max(0, s))
+    l = Math.min(1, Math.max(0, l))
+
+    // RGB değerlerini hesaplayın
+    let r, g, b
+    if (s === 0) {
+        r = g = b = l
+    } else {
+        const hueToRgb = (p, q, t) => {
+            if (t < 0) t += 1
+            if (t > 1) t -= 1
+            if (t < 1 / 6) return p + (q - p) * 6 * t
+            if (t < 1 / 2) return q
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+            return p
+        }
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+        const p = 2 * l - q
+
+        r = hueToRgb(p, q, h + 1 / 3)
+        g = hueToRgb(p, q, h)
+        b = hueToRgb(p, q, h - 1 / 3)
+    }
+
+    // RGB değerlerini 0 ile 255 arasına dönüştürün
+
+    r = Math.round(r * 255)
+    g = Math.round(g * 255)
+    b = Math.round(b * 255)
+
+    return { r, g, b }
+}
+
+
 onBeforeMount(() => {
     let val = localStorage.getItem('ck-cp-local-color-list')
     if (val) {
@@ -1171,8 +1219,10 @@ onMounted(() => {
 </script>
 
 <style lang="scss">
+@import url('../assets/icons/icon.css');
+
 .ck-cp-controller-bar {
-    height: 35px;
+    // height: 35px;
     // background-color: #f1f1f1;
     margin-top: 0.5rem;
     border-radius: 0.475rem;
@@ -1225,9 +1275,10 @@ onMounted(() => {
 
 .cp-picker-wrap {
     width: 100%;
-    height: 175px;
+    height: 145px;
     position: relative;
     overflow: hidden;
+
 }
 
 .picker-saturation {
@@ -1250,6 +1301,17 @@ onMounted(() => {
         inset 0 0 1px 1px rgba(0, 0, 0, 0.3),
         0 0 1px 2px rgba(0, 0, 0, 0.4);
     border-radius: 50%;
+}
+
+.colour-area-mask {
+
+    border-radius: 0.5rem;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: inset rgba(0, 0, 0, 0.075) 0 0 0 1px;
 }
 
 .colour-area {

@@ -1,21 +1,28 @@
 {
-  "name": "vue3.color.picker",
-  "private": false,
-  "version": "0.0.1",
+  "name": "@cyhnkckali/vue3-color-picker",
+  "version": "0.0.4",
   "description": "A color picker component library",
-  "main": "./dist/color-picker-component.umd.js",
-  "module": "./dist/color-picker-component.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/color-picker-component.esm.js",
-      "require": "./dist/color-picker-component.js"
-    }
-  },
+  "type": "module",
   "files": [
     "dist",
-    "src"
+    "src/components/"
   ],
+  "main": "./dist/vue3-color-picker.umd.cjs",
+  "module": "./dist/vue3-color-picker.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue3-color-picker.js",
+      "require": "./dist/vue3-color-picker.umd.cjs"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyhnkckali/vue3-color-picker.git"
+  },
   "keywords": [
     "vue",
     "vue3",
@@ -31,14 +38,13 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "peerDependencies": {
+  "dependencies": {
     "vue": "^3.3.8"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.0",
     "sass": "^1.69.5",
     "vite": "^5.0.0",
-    "vite-plugin-dts": "^3.6.3",
     "vue": "^3.3.8"
   }
 }

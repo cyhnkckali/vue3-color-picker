@@ -1,11 +1,14 @@
 <script setup >
+import { ref } from "vue";
 import ColorPicker from "./components/ColorPicker.vue";
+
+const dval=ref()
 </script>
 
 <template>
     <div>
-
-        <ColorPicker />
+        {{ dval }}
+        <ColorPicker v-model="dval" mode="solid" :showColorList="false" :showEyeDrop="false" />
 
     </div>
 </template>
