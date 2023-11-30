@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import ColorPicker from "./components/ColorPicker.vue";
 
-const dval=ref()
+const dval=ref('rgba(10,20,146,0.5)')
 </script>
 
 <template>

@@ -863,6 +863,7 @@ const saveColor = () => {
 }
 
 const parseVModelString = (value = '') => {
+  if(props.mode=='gradient'){
     let type = value.includes('linear') ? 'linear' : 'radial'
     let newColorList = []
 
@@ -990,10 +991,122 @@ const parseVModelString = (value = '') => {
         colorList.value[0].select = true
         opacity.value = colorList.value[0].a
     }
+  }else{
+    if(value){
+        let color={r:0,g:0,b:0,a:0}
+        if(value.includes('#')){
+            if(value.length>=8)// Color Code HEX8
+            {
+               color = hex8ToRgba(value)
+                
+            }else{ // Color Code HEX
+               color= hexToRgb(value)
+               if(color){
+                color.a=1
+               }
+            }
+        }else if(value.includes('rgb')){
+            if(value.includes('rgba')){ // Color Code RGBA
+                color= parseRgba(value)
+            }else{ // Color Code RGB
+               let result=  parseRgb(value)
+
+               if(result){
+                color.a=1;
+                color.r=result.r
+                color.g=result.g
+                color.b=result.b
+               }else{
+                color=null
+               }
+            }
+        }
+
+        if(color){
+            colorList.value[0].r=color.r
+            colorList.value[0].b=color.b
+            colorList.value[0].g=color.g
+            colorList.value[0].a=parseInt((color.a*100).toFixed(0))
+            opacity.value=colorList.value[0].a
+            colorList.value[0].hue=0
+        }
+    }
+  }
 }
 
 
 // CONVERT FUNCS
+
+const parseRgb=(rgbString)=> {
+    // rgb() değerini kontrol etmek için bir regex deseni kullanabiliriz
+    const rgbRegex = /^rgb\((\s*\d+\s*),(\s*\d+\s*),(\s*\d+\s*)\)$/i;
+
+    // rgb() değerinin doğruluğunu kontrol edelim
+    if (!rgbRegex.test(rgbString)) {
+        return null
+    }
+
+    // rgb() değerinden R, G ve B bileşenlerini ayıklayalım
+    const result = rgbRegex.exec(rgbString);
+    const red = parseInt(result[1].trim(), 10);
+    const green = parseInt(result[2].trim(), 10);
+    const blue = parseInt(result[3].trim(), 10);
+
+    // Parçalanan değerleri nesne olarak döndürelim
+    return {
+       r: red,
+        g:green,
+        b:blue
+    };
+}
+
+const parseRgba=(rgbaString)=> {
+    // rgba() değerini kontrol etmek için bir regex deseni kullanabiliriz
+    const rgbaRegex = /^rgba?\((\s*\d+\s*),(\s*\d+\s*),(\s*\d+\s*),(\s*[\d.]+\s*)\)$/i;
+
+    // rgba() değerinin doğruluğunu kontrol edelim
+    if (!rgbaRegex.test(rgbaString)) {
+        return null
+    }
+
+    // rgba() değerinden R, G, B ve A bileşenlerini ayıklayalım
+    const result = rgbaRegex.exec(rgbaString);
+    const red = parseInt(result[1].trim(), 10);
+    const green = parseInt(result[2].trim(), 10);
+    const blue = parseInt(result[3].trim(), 10);
+    const alpha = parseFloat(result[4].trim());
+
+    // Parçalanan değerleri nesne olarak döndürelim
+    return {
+        r:red,
+        g:green,
+        b:blue,
+        a:alpha
+    };
+}
+
+const hex8ToRgba=(hex8)=> {
+    // HEX8 değerini kontrol etmek için bir regex deseni kullanabiliriz
+    const hex8Regex = /^#?([a-f\d]{8})$/i;
+    
+    // HEX8 değerinin doğruluğunu kontrol edelim
+    if (!hex8Regex.test(hex8)) {
+        return null
+    }
+
+    // HEX8 değerinden R, G, B ve A bileşenlerini ayıklayalım
+    const result = hex8Regex.exec(hex8);
+    const colorHex = result[1];
+    const alphaHex = colorHex.substring(6, 8);
+
+    const red = parseInt(colorHex.substring(0, 2), 16);
+    const green = parseInt(colorHex.substring(2, 4), 16);
+    const blue = parseInt(colorHex.substring(4, 6), 16);
+    const alpha = parseInt(alphaHex, 16) / 255;// HEX8'deki alpha değerini 0-1 aralığına dönüştürme
+
+    // RGBA değerini döndürelim
+    return {r:red,g:green,b:blue,a:alpha}
+}
 
 const rgbaToHex8=(r,g,b,a)=>{
     function componentToHex(c) {
@@ -1207,7 +1320,9 @@ onBeforeMount(() => {
     }
 })
 onMounted(() => {
+if(props.mode=="gradient"){
     gradientMouseBar = document.querySelector('.gradient-bar')
+}
     if (!props.modelValue) {
         setFirstEmptyValue()
     } else {
