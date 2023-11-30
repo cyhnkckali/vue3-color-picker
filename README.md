@@ -42,5 +42,20 @@ import '@cyhnkckali/vue3-color-picker/dist/style.css'
 | `showEyeDrop` | `boolean` | default `true` Supports Chrome and Edge only |
 | `type` | `string` | Return colour value type `HEX8` `RGBA` `RGB` `HEX` default `HEX8`  |
 
+## Use/Examples
+
+```javascript
+<script setup>
+import {ColorPicker} from '@cyhnkckali/vue3-color-picker';
+</script>
+
+<template>   
+
+    <ColorPicker v-model="value" mode="solid" :showColorList="false" :showEyeDrop="false" type="RGBA"/>
+
+    <ColorPicker v-model="value" mode="gradient" :showColorList="false" :showEyeDrop="false"/>
+
+</template>
+```
 
   
