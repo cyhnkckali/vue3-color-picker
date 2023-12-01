@@ -57,6 +57,7 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 | `showColorList` | `boolean` | default `true` |
 | `showEyeDrop` | `boolean` | default `true` Supports Chrome and Edge only |
 | `type` | `string` | Return colour value type `HEX8` `RGBA` `RGB` `HEX` default `HEX8`  |
+| `colorListCount` | `number` | Determines how many colours to keep in the colour list. For Solid mode! default `true`|
 
 
 

@@ -10,36 +10,36 @@
     <div class="ck-cp-menu" :style="mode == 'gradient' ? '' : 'justify-content: end;'">
       <div v-if="mode == 'gradient'" class="ck-cp-controller-bar ">
         <button class="cp-btn" :class="gradientType == 'linear' ? 'active' : ''" @click="setBackgroundType('linear')">
-          <i class="icon-right-up-down-up-arrow"></i>
+          <i class="icon-ck-right-up-down-up-arrow"></i>
         </button>
         <button class="cp-btn" :class="gradientType == 'radial' ? 'active' : ''" @click="setBackgroundType('radial')">
-          <i class="icon-circle"></i>
+          <i class="icon-ck-circle"></i>
         </button>
 
         <button v-show="gradientType == 'linear'" class="cp-btn" :class="isShowLinearAngleRange ? 'active' : ''"
           @click="openLinearAngleRange" style="width: auto">
-          <i class="icon-ruler-cobined"></i>
+          <i class="icon-ck-ruler-cobined"></i>
         </button>
 
         <button v-show="gradientType == 'radial'" class="cp-btn" :class="isShowRadialAngleRange ? 'active' : ''"
           @click="openRadialAngleRange" style="width: auto">
-          <i class="icon-ruler-cobined"></i>
+          <i class="icon-ck-ruler-cobined"></i>
         </button>
       </div>
       <div class="ck-cp-controller-bar" style="display: inline-flex; justify-content: end">
         <button v-if="isEyeDropperUsing && showEyeDrop" id="cp-btn-eyedropper" class="cp-btn"
           @click="handleOnClickEyeDropper">
-          <i class="icon-eye-dropper"></i>
+          <i class="icon-ck-eye-dropper"></i>
         </button>
         <!-- NPM ARACI OLDUĞUNDA SET EDİLCEK RGB RGBA HEX -->
         <!-- <button class="cp-btn" @click="handleOnClickEyeDropper">
-                  <i class="icon-palette"></i>
+                  <i class="icon-ck-palette"></i>
               </button> -->
         <button v-if="showColorList" class="cp-btn" @click="saveColor">
-          <i class="icon-flopy-disk"></i>
+          <i class="icon-ck-flopy-disk"></i>
         </button>
         <button v-if="mode == 'gradient'" class="cp-btn" @click="deleteColor">
-          <i class="icon-trash"></i>
+          <i class="icon-ck-trash"></i>
         </button>
       </div>
     </div>
@@ -144,7 +144,8 @@ const props = defineProps({
   },
   showColorList: { default: true, type: Boolean },
   showEyeDrop: { default: true, type: Boolean },
-  type: { default: 'HEX8', type: String as () => ColorType }
+  type: { default: 'HEX8', type: String as () => ColorType },
+  colorListCount: { default: 18, type: Number }
 })
 
 const emits = defineEmits<{
@@ -932,7 +933,7 @@ if ('EyeDropper' in window) {
 const saveColor = () => {
   const status = localColorList.value.find((color) => color === hexVal.value);
   if (!status) {
-    if (localColorList.value.length === 18) {
+    if (localColorList.value.length === props.colorListCount) {
       localColorList.value.pop();
     }
     let _v = hexVal.value

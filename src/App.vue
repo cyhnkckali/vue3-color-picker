@@ -10,8 +10,7 @@ const handleModel = (e: string) => {
 
 <template>
   <p style="color: #ccc;">{{ color }}</p>
-  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" mode="solid" :showColorList="false"
-    :showEyeDrop="false" />
+  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" />
 </template>
 
 <style>
