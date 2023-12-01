@@ -51,7 +51,7 @@ import {ColorPicker} from '@cyhnkckali/vue3-color-picker';
 ```
 ## Options
 
-| Parametre | Tip     | Açıklama                |
+| Parameter | Type     | Description                |
 | :-------- | :------- | :------------------------- |
 | `mode` | `string` | `solid` or `gradient` default `gradient`|
 | `showColorList` | `boolean` | default `true` |
@@ -61,8 +61,6 @@ import {ColorPicker} from '@cyhnkckali/vue3-color-picker';
 
 
 ## Roadmap
-
-- Typescript declaration
 
 - Adding other colour types. (HSL, HSV, CMYK)
 

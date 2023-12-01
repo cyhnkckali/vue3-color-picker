@@ -1,16 +1,21 @@
-<script setup >
-import { ref } from "vue";
-import ColorPicker from "./components/ColorPicker.vue";
+<script setup lang="ts">
+import { ref } from 'vue';
+import ColorPicker from './components/ColorPicker.vue'
 
-const dval=ref('rgba(10,20,146,0.5)')
+const color = ref('#ff0000ff')
+const handleModel = (e: string) => {
+  document.body.style.background = e;
+}
 </script>
 
 <template>
-    <div>
-        {{ dval }}
-        <ColorPicker v-model="dval" mode="solid" :showColorList="false" :showEyeDrop="false" style="margin: 150px;" />
-
-    </div>
+  <p style="color: #ccc;">{{ color }}</p>
+  <ColorPicker v-model="color" @update:model-value="handleModel" mode="solid" :showColorList="false"
+    :showEyeDrop="false" />
 </template>
 
-<style scoped></style>
+<style>
+body {
+  height: 100vh;
+}
+</style>
