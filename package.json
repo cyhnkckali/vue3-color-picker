@@ -1,19 +1,19 @@
 {
   "name": "@cyhnkckali/vue3-color-picker",
-  "version": "0.1.2",
+  "version": "0.1.5",
   "description": "A color picker component library",
   "type": "module",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src/components/"
   ],
-  "main": "./dist/vue3-color-picker.umd.js",
+  "main": "./dist/vue3-color-picker.umd.cjs",
   "module": "./dist/vue3-color-picker.js",
   "exports": {
     ".": {
-      "import": "./dist/vue3-color-picker.esm.js",
-      "require": "./dist/vue3-color-picker.js"
+      "import": "./dist/vue3-color-picker.js",
+      "require": "./dist/vue3-color-picker.umd.cjs"
     },
     "./dist/style.css": {
       "import": "./dist/style.css",
@@ -33,7 +33,10 @@
     "picker",
     "gradient"
   ],
-  "author": "Ceyhun Küçükali",
+  "author": {
+    "name": "Ceyhun Küçükali",
+    "email": "cyhnkckali@gmail.com"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
@@ -46,6 +49,7 @@
     "@vitejs/plugin-vue": "^4.5.0",
     "eslint": "^8.54.0",
     "eslint-plugin-vue": "^9.19.2",
+    "path": "^0.12.7",
     "sass": "^1.69.5",
     "typescript": "^5.2.2",
     "vite": "^5.0.0",
