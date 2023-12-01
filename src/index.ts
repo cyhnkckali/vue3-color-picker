@@ -1,3 +1,3 @@
-import ColorPicker from './components/ColorPicker.vue'
+import Vue3ColorPicker from './components/ColorPicker.vue'
 
-export {ColorPicker}
+export {Vue3ColorPicker}

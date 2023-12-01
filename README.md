@@ -25,7 +25,7 @@ A colour selective component for Vue 3. Fast and with small package size. Gradie
 ##### Import where you want to use it
 
 ```
-import {ColorPicker} from '@cyhnkckali/vue3-color-picker';
+import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 ``` 
 
 #### Import the style file into your main.js file
@@ -38,14 +38,14 @@ import '@cyhnkckali/vue3-color-picker/dist/style.css'
 
 ```javascript
 <script setup>
-import {ColorPicker} from '@cyhnkckali/vue3-color-picker';
+import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 </script>
 
 <template>   
 
-    <ColorPicker v-model="value" mode="solid" :showColorList="false" :showEyeDrop="false" type="RGBA"/>
+    <Vue3ColorPicker v-model="value" mode="solid" :showColorList="false" :showEyeDrop="false" type="RGBA"/>
 
-    <ColorPicker v-model="value" mode="gradient" :showColorList="false" :showEyeDrop="false"/>
+    <Vue3ColorPicker v-model="value" mode="gradient" :showColorList="false" :showEyeDrop="false"/>
 
 </template>
 ```
