@@ -1,10 +1,10 @@
 @font-face {
-  font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?s55jdp');
-  src:  url('fonts/icomoon.eot?s55jdp#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?s55jdp') format('truetype'),
-    url('fonts/icomoon.woff?s55jdp') format('woff'),
-    url('fonts/icomoon.svg?s55jdp#icomoon') format('svg');
+  font-family: 'colorpicker';
+  src:  url('fonts/colorpicker.eot?s55jdp');
+  src:  url('fonts/colorpicker.eot?s55jdp#iefix') format('embedded-opentype'),
+    url('fonts/colorpicker.ttf?s55jdp') format('truetype'),
+    url('fonts/colorpicker.woff?s55jdp') format('woff'),
+    url('fonts/colorpicker.svg?s55jdp#colorpicker') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -12,7 +12,7 @@
 
 [class^="icon-"], [class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
+  font-family: 'colorpicker' !important;
   speak: never;
   font-style: normal;
   font-weight: normal;
