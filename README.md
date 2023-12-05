@@ -88,7 +88,10 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 
 ## Roadmap
 
+- Widget type to add
+
 - Slot input will be added to change the icons. Icon classes will also be forwardable as property. 
 
 - Fully customisable
-  
+
+- Language support
