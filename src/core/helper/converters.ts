@@ -1,3 +1,16 @@
+interface RGB {
+	r: number
+	g: number
+	b: number
+}
+
+interface CMYK {
+	c: number
+	m: number
+	y: number
+	k: number
+}
+
 const parseRgb = (
 	rgbString: string
 ): {r: number; g: number; b: number} | null => {
@@ -291,6 +304,150 @@ const hslToRgb = (h: number, s: number, l: number) => {
 	return {r, g, b}
 }
 
+const hsvToRgb = (
+	h: number,
+	s: number,
+	v: number
+): {r: number; g: number; b: number} => {
+	let r: number = 0,
+		g: number = 0,
+		b: number = 0
+	const hue: number = h / 60
+	const c: number = v * s
+	const x: number = c * (1 - Math.abs((hue % 2) - 1))
+	const m: number = v - c
+
+	let segment: number = Math.floor(hue) % 6
+
+	switch (segment) {
+		case 0:
+			r = c
+			g = x
+			b = 0
+			break
+		case 1:
+			r = x
+			g = c
+			b = 0
+			break
+		case 2:
+			r = 0
+			g = c
+			b = x
+			break
+		case 3:
+			r = 0
+			g = x
+			b = c
+			break
+		case 4:
+			r = x
+			g = 0
+			b = c
+			break
+		case 5:
+			r = c
+			g = 0
+			b = x
+			break
+		default:
+			break
+	}
+
+	return {
+		r: Math.round((r + m) * 255),
+		g: Math.round((g + m) * 255),
+		b: Math.round((b + m) * 255),
+	}
+}
+
+const rgbToHsv = (
+	r: number,
+	g: number,
+	b: number
+): {h: number; s: number; v: number} => {
+	r /= 255
+	g /= 255
+	b /= 255
+
+	const max: number = Math.max(r, g, b)
+	const min: number = Math.min(r, g, b)
+	let h: number,
+		s: number,
+		v: number = max
+
+	const delta: number = max - min
+
+	if (max !== 0) {
+		s = delta / max
+	} else {
+		// R, G ve B hepsi sıfırsa, renk seviyesi de sıfırdır.
+		return {h: 0, s: 0, v: 0}
+	}
+
+	if (delta === 0) {
+		h = 0
+	} else if (max === r) {
+		h = 60 * (((g - b) / delta) % 6)
+	} else if (max === g) {
+		h = 60 * ((b - r) / delta + 2)
+	} else {
+		h = 60 * ((r - g) / delta + 4)
+	}
+
+	// Hue değeri negatif olamaz, bu yüzden gerekirse 360'a kadar eklenir.
+	if (h < 0) {
+		h += 360
+	}
+
+	return {
+		h: Math.round(h),
+		s: Math.round(s * 100) / 100,
+		v: Math.round(v * 100) / 100,
+	}
+}
+
+const hsvToHsl = (
+	h: number,
+	s: number,
+	v: number
+): {h: number; s: number; l: number} => {
+	const l: number = ((2 - s) * v) / 2
+	const sat: number = l && l < 1 ? (s * v) / (l < 0.5 ? l * 2 : 2 - l * 2) : s
+
+	return {h: h, s: sat, l: l}
+}
+
+const cmykToRgb = (c: number, m: number, y: number, k: number): RGB => {
+	const r: number = Math.round(255 * (1 - c) * (1 - k))
+	const g: number = Math.round(255 * (1 - m) * (1 - k))
+	const b: number = Math.round(255 * (1 - y) * (1 - k))
+
+	return {
+		r: Math.min(255, Math.max(0, r)),
+		g: Math.min(255, Math.max(0, g)),
+		b: Math.min(255, Math.max(0, b)),
+	}
+}
+
+const rgbToCmyk = (r: number, g: number, b: number): CMYK => {
+	r = r / 255
+	g = g / 255
+	b = b / 255
+
+	const k: number = 1 - Math.max(r, g, b)
+	const c: number = (1 - r - k) / (1 - k)
+	const m: number = (1 - g - k) / (1 - k)
+	const y: number = (1 - b - k) / (1 - k)
+
+	return {
+		c: isNaN(c) ? 0 : c,
+		m: isNaN(m) ? 0 : m,
+		y: isNaN(y) ? 0 : y,
+		k: isNaN(k) ? 0 : k,
+	}
+}
+
 export {
 	hex8ToRgba,
 	hexToRgb,
@@ -303,4 +460,9 @@ export {
 	rgbToHsl,
 	rgbToHue,
 	rgbaToHex8,
+	hsvToRgb,
+	rgbToHsv,
+	hsvToHsl,
+	cmykToRgb,
+	rgbToCmyk,
 }

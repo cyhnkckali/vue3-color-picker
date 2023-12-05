@@ -1,158 +1,57 @@
 <template>
-  <div class="ck-cp-container">
-    <div ref="pickerWrap" class="cp-picker-wrap" @mousedown="handlePickerStartOnMouseDown"
-      @dragstart="handleItemDragStart">
-      <canvas ref="canvas" class="colour-area"> </canvas>
-      <div class="colour-area-mask"></div>
-      <div ref="pickerPointer" class="colour-area-point-circle"></div>
-    </div>
+  <div class="ck-cp-container" :cp-theme="theme">
+    <PickerWrap @onMouseDown="handlePickerStartOnMouseDown" />
 
-    <div class="ck-cp-menu" :style="mode == 'gradient' ? '' : 'justify-content: end;'">
-      <div v-if="mode == 'gradient'" class="ck-cp-controller-bar ">
-        <button class="cp-btn" :class="gradientType == 'linear' ? 'active' : ''" @click="setBackgroundType('linear')"
-          style="padding: 7px;">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <path
-              d="M21.5 0h9c0.831 0 1.5 0.669 1.5 1.5v9c0 0.606-0.363 1.156-0.925 1.387s-1.206 0.106-1.637-0.325l-2.438-2.438-5.438 5.438c-0.587 0.588-1.538 0.588-2.119 0l-2-2c-0.587-0.588-0.587-1.537 0-2.119l5.438-5.438-2.444-2.444c-0.431-0.431-0.556-1.075-0.325-1.637s0.781-0.925 1.387-0.925zM10.5 32h-9c-0.831 0-1.5-0.669-1.5-1.5v-9c0-0.606 0.362-1.156 0.925-1.387s1.206-0.106 1.637 0.325l2.438 2.438 5.438-5.438c0.588-0.587 1.537-0.587 2.119 0l2 2c0.588 0.587 0.588 1.538 0 2.119l-5.438 5.438 2.438 2.438c0.431 0.431 0.556 1.075 0.325 1.637s-0.781 0.925-1.387 0.925z">
-            </path>
-          </svg>
+    <PickerMenu v-model:angle="gradientAngle.angle" v-model:percentageX="gradientAngle.percentageX"
+      v-model:percentageY="gradientAngle.percentageY" :mode="mode" :showColorList="showColorList"
+      :showInputMenu="showInputMenu" :showEyeDrop="showEyeDrop" :isEyeDropperUsing="isEyeDropperUsing"
+      :gradientType="gradientType" @onChangeMode="setBackgroundType" @onInput="setGradientBarColor"
+      @onClickEyeDropper="handleOnClickEyeDropper" @onDeleteColor="deleteColor" @onSaveColor="saveColor"
+      @onChangeInputType="handleChangeInputType" />
 
-        </button>
-        <button class="cp-btn" :class="gradientType == 'radial' ? 'active' : ''" @click="setBackgroundType('radial')">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <path
-              d="M29 16c0-7.18-5.82-13-13-13s-13 5.82-13 13v0c0 7.18 5.82 13 13 13s13-5.82 13-13v0zM0 16c0-8.837 7.163-16 16-16s16 7.163 16 16v0c0 8.837-7.163 16-16 16s-16-7.163-16-16v0z">
-            </path>
-          </svg>
 
-        </button>
+    <GradientBar v-if="mode == 'gradient'" @onAddColor="addColor" @onMouseDown="handleGradientItemOnMouseDown" />
 
-        <button v-show="gradientType == 'linear'" class="cp-btn" :class="isShowLinearAngleRange ? 'active' : ''"
-          @click="openLinearAngleRange" style="padding: 7px;">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <path
-              d="M0.013 29.306c0.156 1.512 1.431 2.694 2.987 2.694h26c1.656 0 3-1.344 3-3v-6c0-1.656-1.344-3-3-3h-3v5c0 0.55-0.45 1-1 1s-1-0.45-1-1v-5h-4v5c0 0.55-0.45 1-1 1s-1-0.45-1-1v-5h-4v5c0 0.55-0.45 1-1 1s-1-0.45-1-1v-5h-5c-0.55 0-1-0.45-1-1s0.45-1 1-1h5v-4h-5c-0.55 0-1-0.45-1-1s0.45-1 1-1h5v-4h-5c-0.55 0-1-0.45-1-1s0.45-1 1-1h5v-3c0-1.656-1.344-3-3-3h-6c-1.656 0-3 1.344-3 3v26c0 0.106 0.006 0.206 0.013 0.306z">
-            </path>
-          </svg>
+    <PickerHue v-model="hue" @onInput="setHue(false)" @onChange="handleHueChange" />
 
-        </button>
+    <OpacityBar v-if="showAlpha" v-model="opacity" @onInput="setOpacity" />
 
-        <button v-show="gradientType == 'radial'" class="cp-btn" :class="isShowRadialAngleRange ? 'active' : ''"
-          @click="openRadialAngleRange" style="padding: 7px;">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <path
-              d="M0.013 29.306c0.156 1.512 1.431 2.694 2.987 2.694h26c1.656 0 3-1.344 3-3v-6c0-1.656-1.344-3-3-3h-3v5c0 0.55-0.45 1-1 1s-1-0.45-1-1v-5h-4v5c0 0.55-0.45 1-1 1s-1-0.45-1-1v-5h-4v5c0 0.55-0.45 1-1 1s-1-0.45-1-1v-5h-5c-0.55 0-1-0.45-1-1s0.45-1 1-1h5v-4h-5c-0.55 0-1-0.45-1-1s0.45-1 1-1h5v-4h-5c-0.55 0-1-0.45-1-1s0.45-1 1-1h5v-3c0-1.656-1.344-3-3-3h-6c-1.656 0-3 1.344-3 3v26c0 0.106 0.006 0.206 0.013 0.306z">
-            </path>
-          </svg>
-
-        </button>
-      </div>
-      <div class="ck-cp-controller-bar" style="display: inline-flex; justify-content: end">
-        <button v-if="isEyeDropperUsing && showEyeDrop" id="cp-btn-eyedropper" class="cp-btn" style="padding: 7px;"
-          @click="handleOnClickEyeDropper">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-            <path
-              d="M21.35 1.825l-6.344 6.35-0.588-0.588c-0.781-0.781-2.050-0.781-2.831 0s-0.781 2.050 0 2.831l10 10c0.781 0.781 2.050 0.781 2.831 0s0.781-2.050 0-2.831l-0.587-0.587 6.344-6.35c2.438-2.438 2.438-6.388 0-8.819s-6.387-2.438-8.819 0zM3.462 20.206c-0.938 0.938-1.462 2.212-1.462 3.538v2.65l-1.663 2.494c-0.531 0.794-0.425 1.85 0.25 2.525s1.731 0.781 2.525 0.25l2.494-1.663h2.65c1.325 0 2.6-0.525 3.537-1.462l7.544-7.544-2.831-2.831-7.544 7.544c-0.188 0.188-0.444 0.294-0.706 0.294h-2.256v-2.256c0-0.262 0.106-0.519 0.294-0.706l7.544-7.544-2.831-2.831-7.544 7.544z">
-            </path>
-          </svg>
-        </button>
-        <!-- NPM ARACI OLDUĞUNDA SET EDİLCEK RGB RGBA HEX -->
-        <!-- <button class="cp-btn" @click="handleOnClickEyeDropper">
-                  <i class="icon-ck-palette"></i>
-              </button> -->
-        <button v-if="showColorList" class="cp-btn" @click="saveColor" style="padding: 7px;">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="28" height="32" viewBox="0 0 28 32">
-            <path
-              d="M4 2c-2.206 0-4 1.794-4 4v20c0 2.206 1.794 4 4 4h20c2.206 0 4-1.794 4-4v-15.169c0-1.063-0.419-2.081-1.169-2.831l-4.831-4.831c-0.75-0.75-1.769-1.169-2.831-1.169h-15.169zM4 8c0-1.106 0.894-2 2-2h12c1.106 0 2 0.894 2 2v4c0 1.106-0.894 2-2 2h-12c-1.106 0-2-0.894-2-2v-4zM14 18c2.209 0 4 1.791 4 4s-1.791 4-4 4v0c-2.209 0-4-1.791-4-4s1.791-4 4-4v0z">
-            </path>
-          </svg>
-        </button>
-        <button v-if="mode == 'gradient'" class="cp-btn" @click="deleteColor" style="padding: 7.5px;">
-          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="28" height="32" viewBox="0 0 28 32">
-            <path
-              d="M8.45 1.106l-0.45 0.894h-6c-1.106 0-2 0.894-2 2s0.894 2 2 2h24c1.106 0 2-0.894 2-2s-0.894-2-2-2h-6l-0.45-0.894c-0.337-0.681-1.031-1.106-1.788-1.106h-7.525c-0.756 0-1.45 0.425-1.787 1.106zM26 8h-24l1.325 21.188c0.1 1.581 1.413 2.813 2.994 2.813h15.362c1.581 0 2.894-1.231 2.994-2.813l1.325-21.188z">
-            </path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div v-if="mode == 'gradient'" v-show="gradientType == 'linear' && isShowLinearAngleRange"
-      class="ck-cp-linear-angle-container">
-      <div>
-        <p>
-          Angle <span>{{ gradientAngle.angle }}°</span>
-        </p>
-        <input type="range" min="0" max="360" v-model="gradientAngle.angle" @input="setGradientBarColor" />
-      </div>
-    </div>
-
-    <div v-if="mode == 'gradient'" v-show="gradientType == 'radial' && isShowRadialAngleRange"
-      class="ck-cp-linear-angle-container">
-      <div>
-        <p>
-          Position X <span>{{ gradientAngle.percentageX }}%</span>
-        </p>
-        <input type="range" min="0" max="100" v-model="gradientAngle.percentageX" @input="setGradientBarColor" />
-      </div>
-      <div style="margin-top: 1rem">
-        <p>
-          Position Y <span>{{ gradientAngle.percentageY }}%</span>
-        </p>
-        <input type="range" min="0" max="100" v-model="gradientAngle.percentageY" @input="setGradientBarColor" />
-      </div>
-    </div>
-
-    <div v-if="mode == 'gradient'" class="gradient-bar" @mousedown="handleGradientItemOnMouseDown"
-      @dragstart="handleItemDragStart">
-      <div ref="gradientBar" class="gradient-container" @dblclick="addColor"></div>
-
-      <!-- Target Created -->
-      <div class="gradient-handle" style="left: 0; z-index: -1000; pointer-events: none">
-        <div class="gradient-handle-content"></div>
-      </div>
-    </div>
-
-    <div class="picker-hue">
-      <input ref="rangeInput" v-model="hue" class="picker-hue-range-slider" type="range" min="0" max="360" step="0.1"
-        @input="setHue(false)" @change="handleHueChange" />
-    </div>
-
-    <div class="opacity-bar">
-      <div class="opacity-bar-background"></div>
-      <div class="picker-opacity-slider">
-        <input ref="opacitySlider" v-model="opacity" class="opacity__slider" type="range" min="0" max="100"
-          @input="setOpacity" />
-      </div>
-    </div>
 
     <div v-show="false" id="ck-cp-target-background"></div>
 
-    <div v-if="isReady" class="ck-cp-input-container">
-      <div class="ck-cp-input-content">
+    <div v-if="isReady && showInputSet" class="ck-cp-input-container">
+      <div v-if="inputType !== 'CMYK'" class="ck-cp-input-content color-hex">
         <span class="ck-cp-input-label">HEX</span>
         <input type="text" v-model="hexVal" @input="handleHexOnChange" @blur="handleHexOnBlur" />
       </div>
-      <div class="ck-cp-input-content">
-        <span class="ck-cp-input-label">R</span>
-        <input type="number" min="0" max="255" v-model.number="colorList.find((item) => item.select == true)!.r
-          " @input="handleRGBAInput($event, 'r')" @keydown="handleRGBAOnKeydown" />
-      </div>
-      <div class="ck-cp-input-content">
-        <span class="ck-cp-input-label">G</span>
-        <input type="number" min="0" max="255" v-model.number="colorList.find((item) => item.select == true)!.g
-          " @input="handleRGBAInput($event, 'g')" @keydown="handleRGBAOnKeydown" />
-      </div>
-      <div class="ck-cp-input-content">
-        <span class="ck-cp-input-label">B</span>
-        <input type="number" min="0" max="255" v-model.number="colorList.find((item) => item.select == true)!.b
-          " @input="handleRGBAInput($event, 'b')" @keydown="handleRGBAOnKeydown" />
-      </div>
-      <div class="ck-cp-input-content">
-        <span class="ck-cp-input-label">A</span>
-        <input type="number" min="0" max="100" v-model.number="colorList.find((item) => item.select == true)!.a"
-          @input="handleRGBAInput($event, 'a')" @keydown="handleRGBAOnKeydown" />
-      </div>
+
+
+      <InputNumber v-if="inputType == 'RGB'" label="R" :min="0" :max="255"
+        v-model="colorList.find((item) => item.select == true)!.r" @onInput="handleRGBAInput($event, 'r')" />
+      <InputNumber v-if="inputType == 'RGB'" label="G" :min="0" :max="255"
+        v-model="colorList.find((item) => item.select == true)!.g" @onInput="handleRGBAInput($event, 'g')" />
+      <InputNumber v-if="inputType == 'RGB'" label="B" :min="0" :max="255"
+        v-model="colorList.find((item) => item.select == true)!.b" @onInput="handleRGBAInput($event, 'b')" />
+
+      <InputNumber v-if="inputType == 'HSL'" label="H" :min="0" :max="360" v-model="HSL.h" @onInput="handleHSLInput" />
+      <InputNumber v-if="inputType == 'HSL'" label="S" :min="0" :max="100" v-model="HSL.s" @onInput="handleHSLInput" />
+      <InputNumber v-if="inputType == 'HSL'" label="L" :min="0" :max="100" v-model="HSL.l" @onInput="handleHSLInput" />
+
+
+      <InputNumber v-if="inputType == 'HSV'" label="H" :min="0" :max="360" v-model="HSV.h" @onInput="handleHSVInput" />
+      <InputNumber v-if="inputType == 'HSV'" label="S" :min="0" :max="100" v-model="HSV.s" @onInput="handleHSVInput" />
+      <InputNumber v-if="inputType == 'HSV'" label="V" :min="0" :max="100" v-model="HSV.v" @onInput="handleHSVInput" />
+
+      <InputNumber v-if="inputType == 'CMYK'" label="C" :min="0" :max="100" v-model="CMYK.c" @onInput="handleCMYKInput" />
+      <InputNumber v-if="inputType == 'CMYK'" label="M" :min="0" :max="100" v-model="CMYK.m" @onInput="handleCMYKInput" />
+      <InputNumber v-if="inputType == 'CMYK'" label="Y" :min="0" :max="100" v-model="CMYK.y" @onInput="handleCMYKInput" />
+      <InputNumber v-if="inputType == 'CMYK'" label="K" :min="0" :max="100" v-model="CMYK.k" @onInput="handleCMYKInput" />
+
+      <InputNumber v-if="showAlpha" label="A" :min="0" :max="100"
+        v-model="colorList.find((item) => item.select == true)!.a" style="margin-right: 3px;"
+        @onInput="handleRGBAInput($event, 'r')" />
+
+
     </div>
 
     <div v-if="localColorList.length > 0 && showColorList" class="ck-cp-local-color-conatiner">
@@ -163,9 +62,15 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeMount, ref, reactive } from 'vue'
-import { hex8ToRgba, hexToRgb, hsl2Hex, hslToRgb, parseRgb, parseRgba, rgb2Hex, rgbToHsl, rgbToHue, rgbaToHex8 } from '../core/helper/converters';
-import { Color, RGB, RGBA, Mode, ColorType } from '../core/types/types.ts';
+import { onMounted, onBeforeMount, ref, reactive, provide } from 'vue'
+import PickerMenu from './PickerMenu.vue';
+import GradientBar from './GradientBar.vue';
+import PickerWrap from './PickerWrap.vue';
+import PickerHue from './PickerHue.vue';
+import OpacityBar from './OpacityBar.vue';
+import InputNumber from './InputNumber.vue';
+import { hex8ToRgba, hexToRgb, hsl2Hex, hslToRgb, parseRgb, parseRgba, rgb2Hex, rgbToHsl, rgbToHue, rgbaToHex8, rgbToHsv, hsvToRgb, hsvToHsl, cmykToRgb, rgbToCmyk } from '../core/helper/converters';
+import { Color, RGB, RGBA, Mode, ColorType, Theme, InputType } from '../core/types/types.ts';
 import EyeDropper from '../core/types/eyedropper';
 
 
@@ -175,10 +80,15 @@ const props = defineProps({
     default: 'gradient',
     type: String as () => Mode,
   },
+  type: { default: 'HEX8', type: String as () => ColorType },
+  inputType: { default: 'RGB', type: String as () => InputType, },
+  theme: { default: 'light', type: String as () => Theme, },
+  colorListCount: { default: 18, type: Number },
   showColorList: { default: true, type: Boolean },
   showEyeDrop: { default: true, type: Boolean },
-  type: { default: 'HEX8', type: String as () => ColorType },
-  colorListCount: { default: 18, type: Number }
+  showAlpha: { default: true, type: Boolean },
+  showInputMenu: { default: true, type: Boolean },
+  showInputSet: { default: true, type: Boolean },
 })
 
 const emits = defineEmits<{
@@ -192,24 +102,49 @@ const colorList = ref<Color[]>([
 
 const localColorList = ref<string[]>([])
 
+
+
 const isEyeDropperUsing = ref(false)
 const gradientType = ref('linear')
-const isShowLinearAngleRange = ref(false)
-const isShowRadialAngleRange = ref(false)
 const gradientAngle = reactive({
   angle: 90,
   percentageX: 50,
   percentageY: 50,
 })
 
-const hexVal = ref('')
 
+const hexVal = ref('')
+const inputType = ref(props.inputType)
 const isReady = ref(false)
 const opacitySlider = ref()
 const gradientBar = ref()
 const canvas = ref()
 const pickerWrap = ref()
 const pickerPointer = ref()
+const HSL = reactive({
+  h: 0,
+  s: 0,
+  l: 0,
+})
+const HSV = reactive({
+  h: 0,
+  s: 0,
+  v: 0,
+})
+
+const CMYK = reactive({
+  c: 0,
+  m: 0,
+  y: 0,
+  k: 0,
+})
+
+provide('gradientBar', gradientBar)
+provide('canvas', canvas)
+provide('pickerWrap', pickerWrap)
+provide('pickerPointer', pickerPointer)
+provide('opacitySlider', opacitySlider)
+
 let divX = 0
 let divY = 0
 let offsetX = 0
@@ -304,7 +239,6 @@ const updatePickerPosition = (isNotUpdate: boolean) => {
 
 // HUE FONKSİYONLARI
 const hue = ref(0)
-const rangeInput = ref(null)
 
 const setHue = async (isUpdate: boolean) => {
   const { rgb } = hsl2Hex(hue.value, 100, 50)
@@ -342,7 +276,7 @@ const calculateSL = () => {
   return obj
 }
 
-function findColorCoordinates() {
+const findColorCoordinates = () => {
   const targetColor = colorList.value.find((item) => item.select == true)
 
   if (targetColor) {
@@ -392,12 +326,14 @@ const handleHueChange = () => {
 
 const opacity = ref(100)
 const setOpacity = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const selectedItem = colorList.value.find((item) => item.select == true);
+  if (props.showAlpha) {
+    const target = event.target as HTMLInputElement;
+    const selectedItem = colorList.value.find((item) => item.select == true);
 
-  if (selectedItem) {
-    selectedItem.a = parseInt(target.value);
-    setGradientBarColor();
+    if (selectedItem) {
+      selectedItem.a = parseInt(target.value);
+      setGradientBarColor();
+    }
   }
 }
 // Gradient Bar Funcs
@@ -456,10 +392,6 @@ const handleGradientItemOnMouseDown = (event: MouseEvent) => {
     window.addEventListener('mousemove', handleGradientMouseMove);
     window.addEventListener('mouseup', handleGradientItemOnMouseUp);
   }
-}
-
-const handleItemDragStart = (e: MouseEvent) => {
-  e.preventDefault()
 }
 
 const handleGradientItemOnMouseUp = () => {
@@ -638,23 +570,25 @@ const redrawTheCanvas = (rgb: number[]) => {
   context.fillRect(0, 0, endX, endY)
 
   let grdWhite = context.createLinearGradient(0, 0, endX - 12, 0)
-  grdWhite.addColorStop(0.01, 'rgb(255,255,255)')
-  grdWhite.addColorStop(0.75, 'rgba(255,255,255,0)')
+  grdWhite.addColorStop(0, 'rgb(255,255,255)')
+  grdWhite.addColorStop(1, 'rgba(255,255,255,0)')
   context.fillStyle = grdWhite
   context.fillRect(0, 0, endX, endY)
 
   let grdBlack = context.createLinearGradient(0, 0, 0, endY)
-  grdBlack.addColorStop(0.10, 'rgba(0,0,0,0)')
-  grdBlack.addColorStop(1, 'rgb(10,10,10)')
+  grdBlack.addColorStop(0, 'rgba(0,0,0,0)')
+  grdBlack.addColorStop(1, 'rgb(0,0,0)')
   context.fillStyle = grdBlack
   context.fillRect(0, 0, endX, endY)
 }
 
 const setOpacityBarColor = () => {
-  let colorItem = colorList.value.find((item) => item.select == true)
-  if (colorItem) {
-    opacitySlider.value.style.background = ` linear-gradient(90deg,rgba(255, 255, 255, 0) 0%, rgba(${colorItem.r
-      }, ${colorItem.g}, ${colorItem.b}, 100) 100%)`
+  if (props.showAlpha) {
+    let colorItem = colorList.value.find((item) => item.select == true)
+    if (colorItem) {
+      opacitySlider.value.style.background = ` linear-gradient(90deg,rgba(255, 255, 255, 0) 0%, rgba(${colorItem.r
+        }, ${colorItem.g}, ${colorItem.b}, 100) 100%)`
+    }
   }
 }
 
@@ -753,15 +687,6 @@ const firstSetHue = () => {
 }
 
 // Menu Func
-
-const openLinearAngleRange = () => {
-  isShowLinearAngleRange.value = !isShowLinearAngleRange.value
-}
-
-const openRadialAngleRange = () => {
-  isShowRadialAngleRange.value = !isShowRadialAngleRange.value
-}
-
 const setBackgroundType = (event: string) => {
   gradientType.value = event
 
@@ -868,23 +793,66 @@ const handleRGBAInput = (e: Event, type: string) => {
   }
 }
 
-const handleRGBAOnKeydown = (event: KeyboardEvent) => {
-  if (
-    event.code == 'KeyE' ||
-    event.code == 'Equal' ||
-    event.code == 'NumpadSubtract' ||
-    event.code == 'Backslash' ||
-    event.code == 'Slash' ||
-    event.code == 'NumpadDecimal' ||
-    event.code == 'NumpadAdd'
-  ) {
-    event.preventDefault()
-  } else {
-    let max = parseInt((event.target as HTMLInputElement).max)
-    let val = parseInt((event.target as HTMLInputElement).value + event.key)
-    if (val > max) {
-      event.preventDefault()
-    }
+const handleHSLInput = () => {
+  const selectColor = colorList.value.find(color => color.select == true)
+  if (selectColor && !Number.isNaN(HSL.h) && !Number.isNaN(HSL.s) && !Number.isNaN(HSL.l)) {
+    const { r, g, b } = hslToRgb(HSL.h, HSL.s / 100, HSL.l / 100)
+
+    selectColor.hue = HSL.h
+    selectColor.r = r;
+    selectColor.g = g;
+    selectColor.b = b;
+    setToChangeVariebles(
+      selectColor.r,
+      selectColor.g,
+      selectColor.b,
+      selectColor.hue,
+      true,
+    )
+    setGradientBarColor()
+    setOpacityBarColor()
+  }
+}
+
+const handleHSVInput = () => {
+  const selectColor = colorList.value.find(color => color.select == true)
+  if (selectColor && !Number.isNaN(HSV.h) && !Number.isNaN(HSV.s) && !Number.isNaN(HSV.v)) {
+    const { r, g, b } = hsvToRgb(HSV.h, HSV.s / 100, HSV.v / 100)
+    const { h } = hsvToHsl(HSV.h, HSV.s / 100, HSV.v / 100)
+    selectColor.hue = h
+    selectColor.r = r;
+    selectColor.g = g;
+    selectColor.b = b;
+    setToChangeVariebles(
+      selectColor.r,
+      selectColor.g,
+      selectColor.b,
+      selectColor.hue,
+      true,
+    )
+    setGradientBarColor()
+    setOpacityBarColor()
+  }
+}
+
+const handleCMYKInput = () => {
+  const selectColor = colorList.value.find(color => color.select == true)
+  if (selectColor && !Number.isNaN(CMYK.c) && !Number.isNaN(CMYK.m) && !Number.isNaN(CMYK.y) && !Number.isNaN(CMYK.k)) {
+    const { r, g, b } = cmykToRgb(CMYK.c / 100, CMYK.m / 100, CMYK.y / 100, CMYK.k / 100)
+    const h = rgbToHue(r, g, b)
+    selectColor.hue = h
+    selectColor.r = r;
+    selectColor.g = g;
+    selectColor.b = b;
+    setToChangeVariebles(
+      selectColor.r,
+      selectColor.g,
+      selectColor.b,
+      selectColor.hue,
+      true,
+    )
+    setGradientBarColor()
+    setOpacityBarColor()
   }
 }
 
@@ -913,6 +881,7 @@ const handleHexOnChange = (event: Event) => {
       setToChangeVariebles(val.r, val.g, val.b, selectItem.hue, true);
       setGradientBarColor();
       setOpacityBarColor();
+      handleChangeInputType(inputType.value)
     }
   }
 };
@@ -937,6 +906,7 @@ const onChangeSetToHexValue = () => {
     hexVal.value = rgb2Hex(item.r, item.g, item.b).toUpperCase()
     lastHexValue = hexVal.value
   }
+  handleChangeInputType(inputType.value)
 }
 
 const handleColorItemOnClick = (color: string) => {
@@ -1164,7 +1134,43 @@ const parseVModelString = (value = '') => {
 }
 
 
-// CONVERT FUNCS
+const handleChangeInputType = (event: InputType) => {
+
+  const selectColor = colorList.value.find(color => color.select == true)
+
+  if (selectColor) {
+    switch (event) {
+      case 'RGB':
+
+        break;
+
+      case 'HSL': {
+        const { h, s, l } = rgbToHsl(selectColor.r, selectColor.g, selectColor.b)
+        HSL.h = Math.round(h);
+        HSL.s = Math.round(s * 100);
+        HSL.l = Math.round(l * 100);
+        break;
+      }
+      case 'HSV': {
+        const { h, s, v } = rgbToHsv(selectColor.r, selectColor.g, selectColor.b)
+        HSV.h = Math.round(h);
+        HSV.s = Math.round(s * 100);
+        HSV.v = Math.round(v * 100);
+        break;
+      }
+      case 'CMYK':
+        {
+          const { c, m, y, k } = rgbToCmyk(selectColor.r, selectColor.g, selectColor.b)
+          CMYK.c = Math.round(c * 100)
+          CMYK.m = Math.round(m * 100)
+          CMYK.y = Math.round(y * 100)
+          CMYK.k = Math.round(k * 100)
+        }
+        break;
+    }
+    inputType.value = event
+  }
+}
 
 onBeforeMount(() => {
   let val = localStorage.getItem('ck-cp-local-color-list')
@@ -1182,11 +1188,54 @@ onMounted(() => {
     parseVModelString(props.modelValue)
     setFirstEmptyValue()
   }
+  handleChangeInputType(inputType.value)
   isReady.value = true
 })
 </script>
 
 <style lang="scss">
+:root {
+  --cp-container-bg: #fff;
+  --cp-ps-color: #707070;
+  --cp-act-color: #5983fc;
+  --cp-range-border: #f7f7f7;
+  --cp-input-menu-bg: #F5F5F5;
+  --cp-border-color: #e5e5e5;
+  --cp-range-shadow: #4c86f3;
+  --cp-label-color: #787878;
+  --cp-container-shadow: rgba(88, 88, 88, 0.507);
+  --cp-font-color: #141414;
+  --cp-button-color: #F5F5F5;
+}
+
+
+.ck-cp-container {
+  left: 0;
+  background-color: var(--cp-container-bg);
+  border-radius: 1rem;
+  padding: 10px;
+  width: 250px;
+  height: auto;
+  box-shadow: 0px 0px 34px 1px var(--cp-container-shadow);
+}
+
+.ck-cp-container[cp-theme="dark"] {
+  --cp-container-bg: #212529;
+  --cp-input-menu-bg: #242629;
+  --cp-border-color: #43474b;
+  --cp-label-color: #787878;
+  --cp-container-shadow: #2b262696;
+  --cp-font-color: #e7e7e7;
+  --cp-button-color: #1a1d20;
+
+}
+
+.ck-cp-container * {
+  outline: none;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
 .ck-cp-controller-bar {
   // height: 35px;
   // background-color: #f1f1f1;
@@ -1213,37 +1262,27 @@ onMounted(() => {
   justify-content: center;
   font-size: 14px;
   border-radius: 0.475rem;
-  opacity: 0.65;
+  background-color: var(--cp-button-color);
+}
+
+.cp-btn * {
+  pointer-events: none;
 }
 
 .cp-btn svg path {
-  fill: #303030;
+  fill: var(--cp-ps-color)
 }
 
 .cp-btn.active svg path {
-  fill: #5983fc;
+  fill: var(--cp-act-color)
 }
 
 .cp-btn.active {
   opacity: 1;
-  background-color: #fff;
-  box-shadow: 0px 0px 3px 0px rgba(216, 216, 216, 1);
+  background-color: var(--cp-container-bg);
+  border: 1px solid var(--cp-border-color);
 }
 
-.ck-cp-container {
-  left: 0;
-  background-color: #fff;
-  border-radius: 1rem;
-  padding: 10px;
-  width: 250px;
-  height: auto;
-  box-shadow: 0px 0px 34px 1px rgba(88, 88, 88, 0.507);
-}
-
-.ck-cp-container * {
-  outline: none;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 .cp-picker-wrap {
   width: 100%;
@@ -1276,7 +1315,6 @@ onMounted(() => {
 }
 
 .colour-area-mask {
-
   border-radius: 0.5rem;
   width: 100%;
   height: 100%;
@@ -1341,9 +1379,9 @@ onMounted(() => {
   }
 
   &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-    border: 0.2em solid #f7f7f7;
-    background-color: #5983fc;
+    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+    border: 0.2em solid var(--cp-range-border);
+    background-color: var(--cp-act-color);
     height: 24px;
     width: 24px;
     border-radius: 50%;
@@ -1355,9 +1393,9 @@ onMounted(() => {
   }
 
   &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-    border: 0.2em solid #f7f7f7;
-    background-color: #5983fc;
+    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+    border: 0.2em solid var(--cp-range-border);
+    background-color: var(--cp-act-color);
     height: 24px;
     width: 24px;
     border-radius: 50%;
@@ -1412,9 +1450,9 @@ onMounted(() => {
   }
 
   &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-    border: 0.2em solid #f7f7f7;
-    background-color: #5983fc;
+    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+    border: 0.2em solid var(--cp-range-border);
+    background-color: var(--cp-act-color);
     height: 24px;
     width: 24px;
     border-radius: 50%;
@@ -1426,9 +1464,9 @@ onMounted(() => {
   }
 
   &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-    border: 0.2em solid #5983fc;
-    background-color: #5983fc;
+    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+    border: 0.2em solid var(--cp-act-color);
+    background-color: var(--cp-act-color);
     height: 24px;
     width: 24px;
     border-radius: 50%;
@@ -1463,8 +1501,8 @@ onMounted(() => {
 
 .gradient-handle .gradient-handle-content {
   cursor: ew-resize;
-  box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-  background-color: #f7f7f7;
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  background-color: var(--cp-range-border);
   border-radius: 50%;
   height: 24px;
   width: 24px;
@@ -1472,12 +1510,12 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 0.2em solid #5983fc;
+  border: 0.2em solid var(--cp-act-color);
 }
 
 .gradient-handle.select .gradient-handle-content {
-  background-color: #5983fc;
-  border: 0.2em solid #f7f7f7;
+  background-color: var(--cp-act-color);
+  border: 0.2em solid var(--cp-range-border);
 }
 
 .gradient-handle.select {
@@ -1528,7 +1566,7 @@ onMounted(() => {
   border-radius: 10px;
   z-index: 10;
   appearance: none;
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: var(--cp-border-color);
   height: 5px;
   width: 100%;
   display: block;
@@ -1558,8 +1596,8 @@ onMounted(() => {
   }
 
   &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-    background-color: #5983fc;
+    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+    background-color: var(--cp-act-color);
     height: 24px;
     width: 6px;
     border-radius: 2px;
@@ -1571,8 +1609,8 @@ onMounted(() => {
   }
 
   &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px rgba(12, 90, 235, 0.651);
-    background-color: #5983fc;
+    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+    background-color: var(--cp-act-color);
     height: 24px;
     width: 6px;
     border-radius: 2px;
@@ -1588,12 +1626,12 @@ onMounted(() => {
   text-align: start;
   margin-bottom: 0.6rem;
   font-size: 0.85rem;
-  color: #787878;
+  color: var(--cp-label-color);
   font-weight: 500;
 }
 
 .ck-cp-linear-angle-container p span {
-  color: #5983fc;
+  color: var(--cp-act-color);
   font-weight: 700;
 }
 
@@ -1609,10 +1647,16 @@ onMounted(() => {
   margin-bottom: 12px;
 }
 
-.ck-cp-input-container input[type='text'] {
-  border: 1px solid #e5e5e5;
+.ck-cp-input-container input {
+  background-color: var(--cp-container-bg);
+  border: 1px solid var(--cp-border-color);
+  color: var(--cp-font-color);
   border-radius: 5px;
-  width: 92%;
+}
+
+.ck-cp-input-container input[type='text'] {
+  padding: 0;
+  width: 100%;
   text-align: center;
   height: 30px;
   flex-shrink: 0;
@@ -1620,21 +1664,21 @@ onMounted(() => {
 }
 
 .ck-cp-input-container input[type='number'] {
+  padding: 0;
   appearance: textfield;
   -moz-appearance: textfield;
   -webkit-appearance: textfield;
-  border: 1px solid #e5e5e5;
   border-radius: 5px;
-  width: 30px;
   text-align: center;
-  height: 30px;
   flex-shrink: 0;
   outline: none;
+  height: 100%;
+  width: 100%;
+
 }
 
-.ck-cp-input-container input[type='number']:focus-visible,
-.ck-cp-input-container input[type='text']:focus-visible {
-  border: 1px solid #5983fc;
+.ck-cp-input-container input:focus-visible {
+  border: 1px solid var(--cp-act-color);
 }
 
 .ck-cp-input-container input[type='number']::-webkit-inner-spin-button,
@@ -1644,20 +1688,30 @@ onMounted(() => {
   margin: 0;
 }
 
-.ck-cp-input-container .ck-cp-input-content {
+.ck-cp-input-container .ck-cp-input-content:not(.color-hex) {
   position: relative;
   display: flex;
   flex-direction: column;
+  min-width: 34px;
+  height: 30px;
 }
+
+.ck-cp-input-container .color-hex {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 
 .ck-cp-input-container .ck-cp-input-content .ck-cp-input-label {
   position: absolute;
-  background-color: #fff;
+  background-color: var(--cp-container-bg);
   font-size: 10px;
   top: -6px;
   left: -6px;
   font-weight: 500;
-  color: #787878;
+  color: var(--cp-label-color);
   padding: 0 4px;
   // border-radius: 50%;
 }
@@ -1673,7 +1727,7 @@ onMounted(() => {
   cursor: pointer;
   width: 23px;
   height: 23px;
-  // border: 1px solid #e5e5e5;
+  // border: 1px solid var(--cp-border-color);
   border-radius: 5px;
 }
 </style>
