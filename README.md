@@ -69,8 +69,8 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 ## CSS Colour Variables
 
 
-| Variables Name             | Hex                                                            |Dark Hex
-| ----------------- | ------------------------------------------------------------------ || ------------------------------------------------------------------ |
+| Variables Name             | Hex | Dark Hex
+| :----------------- | :--------------------------- | :-------------------------------------- |
 | --cp-container-bg | ![#FFF](https://placehold.co/10x10/ffffff/FFF) #FFF  |![#212529](https://placehold.co/10x10/212529/212529) #212529 |
 | --cp-ps-color | ![#707070](https://placehold.co/10x10/707070/707070) #707070 |
 | --cp-act-color| ![#5983fc](https://placehold.co/10x10/5983fc/5983fc) #5983fc |
@@ -89,5 +89,4 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 - Slot input will be added to change the icons. Icon classes will also be forwardable as property. 
 
 - Fully customisable
-
-- Widget feature will be added
+  
