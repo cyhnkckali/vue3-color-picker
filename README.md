@@ -3,6 +3,8 @@
 
 A colour selective component for Vue 3. Fast and with small package size. Gradient and Solid in one!
 
+[Live Demo](https://cyhnkckali.github.io/vue3-color-picker/)
+
 ![gradient](https://github.com/cyhnkckali/vue3-color-picker/assets/93313260/b6404bdc-4fc5-4d79-a9a3-0447fe6e4708)
 ![solid1](https://github.com/cyhnkckali/vue3-color-picker/assets/93313260/fbb8efce-b4f6-4356-8a30-fc6904404b30)
 

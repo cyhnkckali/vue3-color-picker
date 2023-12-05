@@ -1,6 +1,6 @@
 {
   "name": "@cyhnkckali/vue3-color-picker",
-  "version": "0.9.9",
+  "version": "1.0.0",
   "description": "A color picker component library",
   "type": "module",
   "types": "./dist/index.d.ts",
@@ -20,6 +20,7 @@
       "require": "./dist/style.css"
     }
   },
+  "homepage": "https://cyhnkckali.github.io/vue3-color-picker/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cyhnkckali/vue3-color-picker.git"
@@ -31,7 +32,8 @@
     "library",
     "color",
     "picker",
-    "gradient"
+    "gradient",
+    "solid"
   ],
   "author": {
     "name": "Ceyhun Küçükali",
