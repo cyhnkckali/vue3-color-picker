@@ -592,7 +592,7 @@ const setOpacityBarColor = () => {
     let colorItem = colorList.value.find((item) => item.select == true)
     if (colorItem) {
       opacitySlider.value.style.background = ` linear-gradient(90deg,rgba(255, 255, 255, 0) 0%, rgba(${colorItem.r
-        }, ${colorItem.g}, ${colorItem.b}, 100) 100%)`
+        }, ${colorItem.g}, ${colorItem.b}, 100) 97%)`
     }
   }
 }
@@ -1421,6 +1421,7 @@ onMounted(() => {
 }
 
 .opacity__slider {
+  padding-inline-end: 0.65px;
   border-radius: 10px;
   z-index: 10;
   appearance: none;
@@ -1556,7 +1557,7 @@ onMounted(() => {
   text-shadow: none;
   transition: none 0s ease 0s;
   transform: scaleX(1) scaleY(1) scaleZ(1);
-  border-radius: 0.5rem;
+  border-radius: 10px;
   width: 100%;
   height: 14px;
   z-index: 0;

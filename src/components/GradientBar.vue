@@ -3,9 +3,9 @@
         <div ref="gradientBar" class="gradient-container" @dblclick="$emit('onAddColor', $event)"></div>
 
         <!-- Target Created -->
-        <div class="gradient-handle" style="left: 0; z-index: -1000; pointer-events: none">
+        <!-- <div class="gradient-handle" style="left: 0; z-index: -1000; pointer-events: none">
             <div class="gradient-handle-content"></div>
-        </div>
+        </div> -->
     </div>
 </template>
 
