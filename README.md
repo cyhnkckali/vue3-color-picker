@@ -1,7 +1,11 @@
 
 # Vue 3 Color Picker
 
-A colour selective component for Vue 3. Fast and with small package size. Gradient and Solid in one!
+A colour selective component for Vue 3. Fast and with small package size. 
+Gradient and Solid in one!
+No dependency!
+Fully customisable!
+
 
 [Live Demo](https://cyhnkckali.github.io/vue3-color-picker/)
 
