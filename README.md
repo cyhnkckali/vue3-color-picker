@@ -60,12 +60,15 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 | `theme` | `string` | `light` or `dark` default `light`|
 | `type` | `string` | Return colour value type `HEX8` `RGBA` `RGB` `HEX` default `HEX8`|
 | `inputType` | `string` | Input type of colour values `RGB` `HSL` `HSV` `CMYK` default `RGB`|
+| `disabled` | `boolean` | default `false` |
+| `local` | `object` | default `{ angle: '', positionX: '', positionY: '' }` |
 | `colorListCount` | `number` | Determines how many colours to keep in the colour list default `18`|
 | `showColorList` | `boolean` | default `true` |
 | `showEyeDrop` | `boolean` | default `true` Supports Chrome and Edge only |
 | `showAlpha` | `boolean` | default `true` |
 | `showInputMenu` | `boolean` | default `true` |
 | `showInputSet` | `boolean` | default `true` |
+| `iconClasses` | `object` | default `{ linear: '', radial: '', ruler: '', eyeDroper: '', inputMenu: '', save: '', delete: '' }` |
 
 
 ## CSS Colour Variables
