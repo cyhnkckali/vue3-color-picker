@@ -1,13 +1,13 @@
 <template>
-  <div class="ck-cp-container" :cp-theme="theme">
+  <div class="ck-cp-container" :cp-theme="theme" :class="disabled ? 'ck-cp-disabled ' : ''">
     <PickerWrap @onMouseDown="handlePickerStartOnMouseDown" />
 
-    <PickerMenu v-model:angle="gradientAngle.angle" v-model:percentageX="gradientAngle.percentageX"
-      v-model:percentageY="gradientAngle.percentageY" :mode="mode" :showColorList="showColorList"
-      :showInputMenu="showInputMenu" :showEyeDrop="showEyeDrop" :isEyeDropperUsing="isEyeDropperUsing"
-      :gradientType="gradientType" @onChangeMode="setBackgroundType" @onInput="setGradientBarColor"
-      @onClickEyeDropper="handleOnClickEyeDropper" @onDeleteColor="deleteColor" @onSaveColor="saveColor"
-      @onChangeInputType="handleChangeInputType" />
+    <PickerMenu v-model:angle="gradientAngle.angle" v-model:percentageX="gradientAngle.percentageX" :local="local"
+      :iconClasses="iconClasses" :inputType="inputType" v-model:percentageY="gradientAngle.percentageY" :mode="mode"
+      :showColorList="showColorList" :showInputMenu="showInputMenu" :showEyeDrop="showEyeDrop"
+      :isEyeDropperUsing="isEyeDropperUsing" :gradientType="gradientType" @onChangeMode="setBackgroundType"
+      @onInput="setGradientBarColor" @onClickEyeDropper="handleOnClickEyeDropper" @onDeleteColor="deleteColor"
+      @onSaveColor="saveColor" @onChangeInputType="handleChangeInputType" />
 
 
     <GradientBar v-if="mode == 'gradient'" @onAddColor="addColor" @onMouseDown="handleGradientItemOnMouseDown" />
@@ -48,7 +48,7 @@
       <InputNumber v-if="inputType == 'CMYK'" label="K" :min="0" :max="100" v-model="CMYK.k" @onInput="handleCMYKInput" />
 
       <InputNumber v-if="showAlpha" label="A" :min="0" :max="100"
-        v-model="colorList.find((item) => item.select == true)!.a" style="margin-right: 3px;"
+        v-model="colorList.find((item) => item.select == true)!.a" style="margin-right: 2px;"
         @onInput="handleRGBAInput($event, 'r')" />
 
 
@@ -70,7 +70,7 @@ import PickerHue from './PickerHue.vue';
 import OpacityBar from './OpacityBar.vue';
 import InputNumber from './InputNumber.vue';
 import { hex8ToRgba, hexToRgb, hsl2Hex, hslToRgb, parseRgb, parseRgba, rgb2Hex, rgbToHsl, rgbToHue, rgbaToHex8, rgbToHsv, hsvToRgb, hsvToHsl, cmykToRgb, rgbToCmyk } from '../core/helper/converters';
-import { Color, RGB, RGBA, Mode, ColorType, Theme, InputType } from '../core/types/types.ts';
+import { Color, RGB, RGBA, Mode, ColorType, Theme, InputType, Local, IconClasses } from '../core/types/types.ts';
 import EyeDropper from '../core/types/eyedropper';
 
 
@@ -89,7 +89,12 @@ const props = defineProps({
   showAlpha: { default: true, type: Boolean },
   showInputMenu: { default: true, type: Boolean },
   showInputSet: { default: true, type: Boolean },
+  disabled: { default: false, type: Boolean },
+  local: { default: { angle: '', positionX: '', positionY: '' }, type: Object as () => Local },
+  iconClasses: { default: { linear: '', radial: '', ruler: '', eyeDroper: '', inputMenu: '', save: '', delete: '' }, type: Object as () => IconClasses }
 })
+
+
 
 const emits = defineEmits<{
   (e: 'update:modelValue', value: string): void
@@ -1308,9 +1313,9 @@ onMounted(() => {
   width: 12px;
   height: 12px;
   box-shadow:
-    0 0 0 1.5px #fff,
-    inset 0 0 1px 1px rgba(0, 0, 0, 0.3),
-    0 0 1px 2px rgba(0, 0, 0, 0.4);
+    0 0 0 1.5px var(--cp-container-bg),
+    inset 0 0 1px 1px var(--cp-font-color),
+    0 0 1px 2px var(--cp-font-color);
   border-radius: 50%;
 }
 
@@ -1562,7 +1567,7 @@ onMounted(() => {
 }
 
 .ck-cp-linear-angle-container input[type='range'] {
-
+  margin: 0;
   border-radius: 10px;
   z-index: 10;
   appearance: none;
@@ -1622,15 +1627,15 @@ onMounted(() => {
   }
 }
 
-.ck-cp-linear-angle-container p {
+.ck-cp-linear-angle-container .ck-gradient-set-label {
   text-align: start;
-  margin-bottom: 0.6rem;
-  font-size: 0.85rem;
+  font-size: 13.5px;
   color: var(--cp-label-color);
   font-weight: 500;
+  margin-bottom: 15px;
 }
 
-.ck-cp-linear-angle-container p span {
+.ck-cp-linear-angle-container .ck-gradient-set-label span {
   color: var(--cp-act-color);
   font-weight: 700;
 }
@@ -1661,6 +1666,7 @@ onMounted(() => {
   height: 30px;
   flex-shrink: 0;
   outline: none;
+  font-size: 14px;
 }
 
 .ck-cp-input-container input[type='number'] {
@@ -1674,7 +1680,7 @@ onMounted(() => {
   outline: none;
   height: 100%;
   width: 100%;
-
+  font-size: 14px;
 }
 
 .ck-cp-input-container input:focus-visible {
@@ -1713,6 +1719,7 @@ onMounted(() => {
   font-weight: 500;
   color: var(--cp-label-color);
   padding: 0 4px;
+  z-index: 1;
   // border-radius: 50%;
 }
 
@@ -1729,5 +1736,10 @@ onMounted(() => {
   height: 23px;
   // border: 1px solid var(--cp-border-color);
   border-radius: 5px;
+}
+
+.ck-cp-disabled * {
+  pointer-events: none !important;
+  opacity: 0.75;
 }
 </style>

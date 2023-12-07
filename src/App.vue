@@ -13,7 +13,7 @@ onMounted(() => {
 
 <template>
   <p style="color: #ccc;">{{ color }}</p>
-  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="dark" />
+  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="dark" :local="{ angle: 'Ceyhun' }" />
 </template>
 
 <style>
