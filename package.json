@@ -13,7 +13,8 @@
   "exports": {
     ".": {
       "import": "./dist/vue3-color-picker.js",
-      "require": "./dist/vue3-color-picker.umd.cjs"
+      "require": "./dist/vue3-color-picker.umd.cjs",
+      "types": "./dist/index.d.ts" 
     },
     "./dist/style.css": {
       "import": "./dist/style.css",
