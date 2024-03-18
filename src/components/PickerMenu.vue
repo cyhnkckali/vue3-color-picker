@@ -1,7 +1,7 @@
 <template>
     <div class="ck-cp-menu" :style="mode == 'gradient' ? '' : 'justify-content: end;'">
         <div v-if="mode == 'gradient'" class="ck-cp-controller-bar ">
-            <button class="cp-btn" :class="gradientType == 'linear' ? 'active' : ''"
+            <button type="button" class="cp-btn" :class="gradientType == 'linear' ? 'active' : ''"
                 @click="$emit('onChangeMode', 'linear')" :style="`${iconClasses.linear ? '' : 'padding: 7px;'}`">
 
                 <i v-if="iconClasses.linear" :class="iconClasses.linear"></i>
@@ -12,7 +12,7 @@
                 </svg>
 
             </button>
-            <button class="cp-btn" :class="gradientType == 'radial' ? 'active' : ''"
+            <button type="button" class="cp-btn" :class="gradientType == 'radial' ? 'active' : ''"
                 @click="$emit('onChangeMode', 'radial')" :style="`${iconClasses.radial ? '' : 'padding: 6px;'}`">
                 <i v-if="iconClasses.radial" :class="iconClasses.radial"></i>
                 <svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -23,7 +23,7 @@
 
             </button>
 
-            <button v-show="gradientType == 'linear'" class="cp-btn" :class="isShowLinearAngleRange ? 'active' : ''"
+            <button type="button" v-show="gradientType == 'linear'" class="cp-btn" :class="isShowLinearAngleRange ? 'active' : ''"
                 @click="isShowLinearAngleRange = !isShowLinearAngleRange"
                 :style="`${iconClasses.ruler ? '' : 'padding: 7px;'}`">
                 <i v-if="iconClasses.ruler" :class="iconClasses.ruler"></i>
@@ -35,7 +35,7 @@
 
             </button>
 
-            <button v-show="gradientType == 'radial'" class="cp-btn" :class="isShowRadialAngleRange ? 'active' : ''"
+            <button type="button" v-show="gradientType == 'radial'" class="cp-btn" :class="isShowRadialAngleRange ? 'active' : ''"
                 @click="isShowRadialAngleRange = !isShowRadialAngleRange"
                 :style="`${iconClasses.ruler ? '' : 'padding: 7px;'}`">
                 <i v-if="iconClasses.ruler" :class="iconClasses.ruler"></i>
@@ -49,7 +49,7 @@
         </div>
         <div ref="rightContainer" class="ck-cp-controller-bar"
             style="display: inline-flex; justify-content: end;position: relative;">
-            <button v-if="isEyeDropperUsing && showEyeDrop" id="cp-btn-eyedropper" class="cp-btn"
+            <button type="button" v-if="isEyeDropperUsing && showEyeDrop" id="cp-btn-eyedropper" class="cp-btn"
                 :style="`${iconClasses.eyeDroper ? '' : 'padding: 7px;'}`" @click="$emit('onClickEyeDropper')">
                 <i v-if="iconClasses.eyeDroper" :class="iconClasses.eyeDroper"></i>
                 <svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -59,7 +59,7 @@
                 </svg>
             </button>
             <!-- NPM ARACI OLDUĞUNDA SET EDİLCEK RGB RGBA HEX -->
-            <button v-if="showInputMenu" class="cp-btn" @click="onShowInputMenu" :class="isInputMenuShow ? 'active' : ''"
+            <button type="button" v-if="showInputMenu" class="cp-btn" @click="onShowInputMenu" :class="isInputMenuShow ? 'active' : ''"
                 :style="`${iconClasses.inputMenu ? '' : 'padding: 7px;'}`">
                 <i v-if="iconClasses.inputMenu" :class="iconClasses.inputMenu"></i>
                 <svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
@@ -71,7 +71,7 @@
             </button>
             <ColorInputMenu v-show="isInputMenuShow" :inputType="inputType" @onChangeInputName="handleChangeInputType">
             </ColorInputMenu>
-            <button v-if="showColorList" class="cp-btn" @click="$emit('onSaveColor')"
+            <button type="button" v-if="showColorList" class="cp-btn" @click="$emit('onSaveColor')"
                 :style="`${iconClasses.save ? '' : 'padding: 7px;'}`">
                 <i v-if="iconClasses.save" :class="iconClasses.save"></i>
                 <svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" width="28" height="32" viewBox="0 0 28 32">
@@ -80,7 +80,7 @@
                     </path>
                 </svg>
             </button>
-            <button v-if="mode == 'gradient'" class="cp-btn" @click="$emit('onDeleteColor')"
+            <button type="button" v-if="mode == 'gradient'" class="cp-btn" @click="$emit('onDeleteColor')"
                 :style="`${iconClasses.delete ? '' : 'padding: 7.5px;'}`">
                 <i v-if="iconClasses.delete" :class="iconClasses.delete"></i>
                 <svg v-else version="1.1" xmlns="http://www.w3.org/2000/svg" width="28" height="32" viewBox="0 0 28 32">
