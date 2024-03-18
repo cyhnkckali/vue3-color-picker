@@ -50,6 +50,7 @@
           type="text"
           v-model="hexVal"
           @input="handleHexOnChange"
+          @keydown="handleHexKeydown"
           @blur="handleHexOnBlur"
         />
       </div>
@@ -1061,38 +1062,59 @@ const handleHexOnChange = (event: Event) => {
   }
 
   hexVal.value = `#${target.value.replace(/#/g, "")}`;
-
-  const val = hexToRgb(hexVal.value);
-
-  if (val) {
-    const hueVal = rgbToHue(val.r, val.g, val.b);
-    lastHexValue = hexVal.value;
-    const selectItem = colorList.value.find((item) => item.select == true);
-    if (selectItem) {
-      selectItem.r = val.r;
-      selectItem.g = val.g;
-      selectItem.b = val.b;
-      selectItem.hue = hueVal;
-
-      setToChangeVariebles(val.r, val.g, val.b, selectItem.hue, true);
-      setGradientBarColor();
-      setOpacityBarColor();
-      handleChangeInputType(inputType.value);
-    }
-  }
 };
 
-const handleHexOnBlur = () => {
-  if (lastHexValue) {
-    let val = lastHexValue.replace(/#/g, ""); // # karakterlerini kaldırır
+const applyHex = () => {
+  if (hexVal.value) {
+    let val = hexVal.value.replace(/#/g, "");
 
-    if (val.length > 6) {
-      val = val.slice(0, 6); // Uzunluğu 6'dan fazla ise ilk 6 karakteri alır
+    switch (val.length) {
+      case 0:
+        val = lastHexValue.replace('#', '');
+        break;
+      case 1:
+      case 2:
+        val = val.repeat(3);
+        break;
+      case 4:
+      case 5:
+        val = val.slice(0, 3);
+        break;
+      case 3:
+      case 6:
+        break;
+      default:
+        val = val.slice(0, 6);
     }
 
-    hexVal.value = `#${val.toUpperCase()}`; // Büyük harfe dönüştürür ve "#" ekler
+    hexVal.value = `#${val.toUpperCase()}`;
+
+    const rgb = hexToRgb(hexVal.value);
+
+    if (rgb) {
+      const hueVal = rgbToHue(rgb.r, rgb.g, rgb.b);
+      lastHexValue = hexVal.value;
+      const selectItem = colorList.value.find((item) => item.select == true);
+      if (selectItem) {
+        selectItem.r = rgb.r;
+        selectItem.g = rgb.g;
+        selectItem.b = rgb.b;
+        selectItem.hue = hueVal;
+      
+        setToChangeVariebles(rgb.r, rgb.g, rgb.b, selectItem.hue, true);
+        setGradientBarColor();
+        setOpacityBarColor();
+        handleChangeInputType(inputType.value);
+      }
+    }
   }
+}
+
+const handleHexKeydown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') applyHex();
 };
+
+const handleHexOnBlur = applyHex;
 
 const onChangeSetToHexValue = () => {
   const item = colorList.value.find((item) => item.select == true);
