@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.23.5.tgz#37dee97c4752af148e1d38c34b856b2507660563"
   integrity sha512-hOOqoiNXrmGdFbhgCzu6GiURxUgM27Xwd/aPuu8RfHEZPBzL1Z54okAHAQjXfcQNwvrlkAmAp4SlRTZ45vlthQ==
 
-"@cyhnkckali/vue3-color-picker@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@cyhnkckali/vue3-color-picker/-/vue3-color-picker-1.1.4.tgz#9270c3415ffd82d0139bac3b3d2fa679ed25864f"
-  integrity sha512-L+8z0IvW8dq4fX5OA2dHHniJd04WPRGgCJFNXBmVl2qcf0K6NEgP8W9Kglg+HHAedl4J0CR6Nb49+L+HTSyQLg==
+"@cyhnkckali/vue3-color-picker@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@cyhnkckali/vue3-color-picker/-/vue3-color-picker-1.1.5.tgz#bffe919ab0058dd7d45f1ad4b0f07942da205aa9"
+  integrity sha512-Vt9tRV0e97neilA0KNzjmbySGuXe68eXOyMRXSejK/u3w9FVR4bMLEeMm9rZAIIkUddhQN54fudYLlboqKnClQ==
 
 "@esbuild/android-arm64@0.19.8":
   version "0.19.8"
