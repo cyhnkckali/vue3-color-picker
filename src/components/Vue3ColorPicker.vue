@@ -170,7 +170,7 @@
         :max="100"
         v-model="colorList.find((item) => item.select == true)!.a"
         style="margin-right: 2px"
-        @onInput="handleRGBAInput($event, 'r')"
+        @onInput="handleRGBAInput($event, 'a')"
       />
     </div>
 
