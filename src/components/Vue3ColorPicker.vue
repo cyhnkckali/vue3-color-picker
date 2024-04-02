@@ -267,6 +267,11 @@ const pickerTemplateRef = ref<HTMLElement | null>(null);
 const emits = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
+const emittedValue = ref(props.modelValue);
+const emitUpdateModelValue = (value: string) => {
+  emittedValue.value = value;
+  emits('update:modelValue', value);
+};
 
 const colorList = ref<Color[]>([
   { id: 1, r: 68, g: 71, b: 119, a: 100, percent: 0, hue: 0, select: true },
@@ -274,6 +279,7 @@ const colorList = ref<Color[]>([
 ]);
 
 const localColorList = ref<string[]>([]);
+
 
 const isEyeDropperUsing = ref(false);
 const gradientType = ref("linear");
@@ -828,10 +834,7 @@ const setGradientBarColor = () => {
       (target as HTMLElement).style.backgroundImage =
         gradientBarBackgroundImage;
       if (isReady.value) {
-        emits(
-          "update:modelValue",
-          (target as HTMLElement).style.backgroundImage
-        );
+        emitUpdateModelValue((target as HTMLElement).style.backgroundImage);
       }
     }
   } else {
@@ -854,7 +857,7 @@ const setGradientBarColor = () => {
       default:
         break;
     }
-    emits("update:modelValue", val);
+    emitUpdateModelValue(val);
   }
 };
 
@@ -1405,14 +1408,6 @@ const handleChangeInputType = (event: InputType) => {
   }
 };
 
-const clearColorList = () => {
-  colorList.value.forEach((item: Record<string, any>) => {
-    const deleteElement = document.querySelector(`#clr-gb-${item.id}`);
-    deleteElement?.remove();
-  });
-  colorList.value = [];
-};
-
 const applyValue = (value: string) => {
   if (!value) {
     setFirstEmptyValue();
@@ -1423,8 +1418,11 @@ const applyValue = (value: string) => {
 };
 
 watch(() => props.modelValue, (newValue: string, oldValue: string) => {
-  if (newValue !== oldValue) {
-    clearColorList();
+  if (newValue !== oldValue && newValue !== emittedValue.value) {
+    colorList.value.forEach((item: Record<string, any>) => {
+      const deleteElement = gradientMouseBar?.querySelector(`#clr-gb-${item.id}`);
+      deleteElement?.remove();
+    });
     applyValue(newValue);
   }
 });
