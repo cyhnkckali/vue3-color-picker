@@ -280,7 +280,6 @@ const colorList = ref<Color[]>([
 
 const localColorList = ref<string[]>([]);
 
-
 const isEyeDropperUsing = ref(false);
 const gradientType = ref("linear");
 const gradientAngle = reactive({
