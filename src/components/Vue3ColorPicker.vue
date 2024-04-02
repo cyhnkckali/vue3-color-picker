@@ -190,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeMount, ref, reactive, provide } from "vue";
+import { onMounted, onBeforeMount, ref, reactive, provide, watch } from "vue";
 import PickerMenu from "./PickerMenu.vue";
 import GradientBar from "./GradientBar.vue";
 import PickerWrap from "./PickerWrap.vue";
@@ -1402,22 +1402,42 @@ const handleChangeInputType = (event: InputType) => {
   }
 };
 
+const clearColorList = () => {
+  colorList.value.forEach((item: Record<string, any>) => {
+    const deleteElement = document.querySelector(`#clr-gb-${item.id}`);
+    deleteElement?.remove();
+  });
+  colorList.value = [];
+};
+
+const applyValue = (value: string) => {
+  if (!value) {
+    setFirstEmptyValue();
+  } else {
+    parseVModelString(value);
+    setFirstEmptyValue();
+  }
+};
+
+watch(() => props.modelValue, (newValue: string, oldValue: string) => {
+  if (newValue !== oldValue) {
+    clearColorList();
+    applyValue(newValue);
+  }
+});
+
 onBeforeMount(() => {
   let val = localStorage.getItem("ck-cp-local-color-list");
   if (val) {
     localColorList.value = JSON.parse(val);
   }
 });
+
 onMounted(() => {
   if (props.mode == "gradient") {
     gradientMouseBar = document.querySelector(".gradient-bar");
   }
-  if (!props.modelValue) {
-    setFirstEmptyValue();
-  } else {
-    parseVModelString(props.modelValue);
-    setFirstEmptyValue();
-  }
+  applyValue(props.modelValue);
   handleChangeInputType(inputType.value);
   isReady.value = true;
 });
