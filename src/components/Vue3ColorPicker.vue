@@ -1,6 +1,7 @@
 <template>
   <div
     class="ck-cp-container"
+    ref="pickerTemplateRef"
     :cp-theme="theme"
     :class="disabled ? 'ck-cp-disabled ' : ''"
   >
@@ -261,6 +262,8 @@ const props = defineProps({
   },
 });
 
+const pickerTemplateRef = ref<HTMLElement | null>(null);
+
 const emits = defineEmits<{
   (e: "update:modelValue", value: string): void;
 }>();
@@ -503,8 +506,8 @@ const setOpacity = (event: Event) => {
 };
 // Gradient Bar Funcs
 const setToLeftGradientBarItem = (val: number) => {
-  const handleClient = document
-    .querySelector(".gradient-handle-content")
+  const handleClient = pickerTemplateRef.value
+    ?.querySelector(".gradient-handle-content")
     ?.getBoundingClientRect(); // Elementin varlığını kontrol etmek için "?." kullanımı
 
   if (val === 0) {
@@ -530,7 +533,7 @@ const handleGradientItemOnMouseDown = (event: MouseEvent) => {
     const selectedItem = colorList.value.find((item) => item.select == true);
 
     if (selectedItem && selectedItem.id != id) {
-      const selectedHandle = document.querySelector(
+      const selectedHandle = pickerTemplateRef.value?.querySelector(
         ".gradient-handle.select"
       ) as HTMLElement | null;
       selectedHandle?.classList.remove("select");
@@ -568,8 +571,8 @@ const handleGradientItemOnMouseUp = () => {
 const handleGradientMouseMove = (e: MouseEvent) => {
   e.preventDefault();
 
-  const handleClient = document
-    .querySelector(".gradient-handle-content")
+  const handleClient = pickerTemplateRef.value
+    ?.querySelector(".gradient-handle-content")
     ?.getBoundingClientRect();
   const client = gradientMouseBar?.getBoundingClientRect();
   const lastRightPoint = client?.width! - handleClient?.width!;
@@ -622,7 +625,7 @@ const addColor = (e: MouseEvent) => {
   };
 
   colorList.value[selectIndex].select = false;
-  const selectedHandle = document.querySelector(
+  const selectedHandle = pickerTemplateRef.value?.querySelector(
     ".gradient-handle.select"
   ) as HTMLElement | null;
   selectedHandle?.classList.remove("select");
@@ -630,7 +633,7 @@ const addColor = (e: MouseEvent) => {
   colorList.value = [...colorList.value, item];
 
   createGradientItem(item);
-  selectedGradientItem = document.querySelector(`#clr-gb-${item.id}`);
+  selectedGradientItem = pickerTemplateRef.value?.querySelector(`#clr-gb-${item.id}`) as HTMLElement;
   setGradientBarColor();
 };
 
@@ -820,7 +823,7 @@ const setGradientBarColor = () => {
 
     gradientBar.value.style.backgroundImage = barBackground;
 
-    let target = document.querySelector("#ck-cp-target-background");
+    let target = pickerTemplateRef.value?.querySelector("#ck-cp-target-background");
     if (target) {
       (target as HTMLElement).style.backgroundImage =
         gradientBarBackgroundImage;
@@ -875,13 +878,13 @@ const deleteColor = () => {
     if (index !== -1) {
       const deleteItemID = colorList.value[index].id;
       colorList.value.splice(index, 1);
-      const deleteElement = document.querySelector(`#clr-gb-${deleteItemID}`);
+      const deleteElement = pickerTemplateRef.value?.querySelector(`#clr-gb-${deleteItemID}`);
       deleteElement?.remove();
 
       const item = colorList.value[0];
       if (item) {
         item.select = true;
-        selectedGradientItem = document.querySelector(`#clr-gb-${item.id}`);
+        selectedGradientItem = pickerTemplateRef.value?.querySelector(`#clr-gb-${item.id}`) as HTMLElement;
         selectedGradientItem?.classList.add("select");
         setToChangeVariebles(item.r, item.g, item.b, item.hue, false);
         onChangeSetToHexValue();
@@ -892,7 +895,7 @@ const deleteColor = () => {
 };
 
 const handleOnClickEyeDropper = () => {
-  const el = document.querySelector<HTMLElement>("#cp-btn-eyedropper");
+  const el = pickerTemplateRef.value?.querySelector<HTMLElement>("#cp-btn-eyedropper");
   el?.classList.add("active");
 
   // @ts-ignore
@@ -1410,7 +1413,7 @@ onBeforeMount(() => {
 });
 onMounted(() => {
   if (props.mode == "gradient") {
-    gradientMouseBar = document.querySelector(".gradient-bar");
+    gradientMouseBar = pickerTemplateRef.value?.querySelector(".gradient-bar") as HTMLElement;
   }
   if (!props.modelValue) {
     setFirstEmptyValue();
