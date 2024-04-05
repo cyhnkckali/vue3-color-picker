@@ -62,7 +62,7 @@
         :min="0"
         :max="255"
         v-model="colorList.find((item) => item.select == true)!.r"
-        @onInput="handleRGBAInput($event, 'r')"
+        @update:model-value="(value) => handleRGBAInput(value, 'r')"
       />
       <InputNumber
         v-if="inputType == 'RGB'"
@@ -70,7 +70,7 @@
         :min="0"
         :max="255"
         v-model="colorList.find((item) => item.select == true)!.g"
-        @onInput="handleRGBAInput($event, 'g')"
+        @update:model-value="(value) => handleRGBAInput(value, 'g')"
       />
       <InputNumber
         v-if="inputType == 'RGB'"
@@ -78,7 +78,7 @@
         :min="0"
         :max="255"
         v-model="colorList.find((item) => item.select == true)!.b"
-        @onInput="handleRGBAInput($event, 'b')"
+        @update:model-value="(value) => handleRGBAInput(value, 'b')"
       />
 
       <InputNumber
@@ -87,7 +87,7 @@
         :min="0"
         :max="360"
         v-model="HSL.h"
-        @onInput="handleHSLInput"
+        @update:model-value="handleHSLInput"
       />
       <InputNumber
         v-if="inputType == 'HSL'"
@@ -95,7 +95,7 @@
         :min="0"
         :max="100"
         v-model="HSL.s"
-        @onInput="handleHSLInput"
+        @update:model-value="handleHSLInput"
       />
       <InputNumber
         v-if="inputType == 'HSL'"
@@ -103,7 +103,7 @@
         :min="0"
         :max="100"
         v-model="HSL.l"
-        @onInput="handleHSLInput"
+        @update:model-value="handleHSLInput"
       />
 
       <InputNumber
@@ -112,7 +112,7 @@
         :min="0"
         :max="360"
         v-model="HSV.h"
-        @onInput="handleHSVInput"
+        @update:model-value="handleHSVInput"
       />
       <InputNumber
         v-if="inputType == 'HSV'"
@@ -120,7 +120,7 @@
         :min="0"
         :max="100"
         v-model="HSV.s"
-        @onInput="handleHSVInput"
+        @update:model-value="handleHSVInput"
       />
       <InputNumber
         v-if="inputType == 'HSV'"
@@ -128,7 +128,7 @@
         :min="0"
         :max="100"
         v-model="HSV.v"
-        @onInput="handleHSVInput"
+        @update:model-value="handleHSVInput"
       />
 
       <InputNumber
@@ -137,7 +137,7 @@
         :min="0"
         :max="100"
         v-model="CMYK.c"
-        @onInput="handleCMYKInput"
+        @update:model-value="handleCMYKInput"
       />
       <InputNumber
         v-if="inputType == 'CMYK'"
@@ -145,7 +145,7 @@
         :min="0"
         :max="100"
         v-model="CMYK.m"
-        @onInput="handleCMYKInput"
+        @update:model-value="handleCMYKInput"
       />
       <InputNumber
         v-if="inputType == 'CMYK'"
@@ -153,7 +153,7 @@
         :min="0"
         :max="100"
         v-model="CMYK.y"
-        @onInput="handleCMYKInput"
+        @update:model-value="handleCMYKInput"
       />
       <InputNumber
         v-if="inputType == 'CMYK'"
@@ -161,7 +161,7 @@
         :min="0"
         :max="100"
         v-model="CMYK.k"
-        @onInput="handleCMYKInput"
+        @update:model-value="handleCMYKInput"
       />
 
       <InputNumber
@@ -169,9 +169,9 @@
         label="A"
         :min="0"
         :max="100"
-        v-model="colorList.find((item) => item.select == true)!.a"
         style="margin-right: 2px"
-        @onInput="handleRGBAInput($event, 'a')"
+        v-model="colorList.find((item) => item.select == true)!.a"
+        @update:model-value="(value) => handleRGBAInput(value, 'a')"
       />
     </div>
 
@@ -951,7 +951,7 @@ const handleOnClickEyeDropper = () => {
     });
 };
 
-const handleRGBAInput = (e: Event, type: string) => {
+const handleRGBAInput = (value: number, type: string) => {
   if (type != "a") {
     const selectItem = colorList.value.find((item) => item.select == true);
     if (selectItem) {
@@ -968,7 +968,7 @@ const handleRGBAInput = (e: Event, type: string) => {
       setOpacityBarColor();
     }
   } else {
-    opacity.value = parseInt((e.target as HTMLInputElement).value);
+    opacity.value = value;
     setGradientBarColor();
     setOpacityBarColor();
   }
