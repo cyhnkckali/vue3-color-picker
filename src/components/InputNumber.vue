@@ -5,7 +5,8 @@
             type="number"
             :min="min"
             :max="max"
-            v-model="model"
+            :value="internal"
+            @input="handleInput"
             @keydown="handleKeydown"
             @focusout="handleFocusOut"
         />
@@ -13,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     label: { default: '', type: String },
@@ -26,20 +27,15 @@ const emits = defineEmits<{
     (e: 'update:modelValue', value: number): void
 }>();
 
-const internal = ref<number>(props.modelValue);
-
-const model = computed({
-    get: () => internal.value,
-    set: (value) => internal.value = value
-});
+const internal = ref<number | string>(props.modelValue);
 
 watch(() => props.modelValue, (newValue, oldValue) => {
-    if (newValue !== oldValue) model.value = newValue;
+    if (newValue !== oldValue) internal.value = newValue;
 });
 
 const emitUpdateModelValue = (event: Event) => {
     const updateModelAndEmitUpdateModelValue = (value: number) => {
-        model.value = value;
+        internal.value = value;
         emits('update:modelValue', value);
     };
 
@@ -48,6 +44,10 @@ const emitUpdateModelValue = (event: Event) => {
     if (!value) return updateModelAndEmitUpdateModelValue(props.modelValue);
     if (parseInt(value) > props.max) return updateModelAndEmitUpdateModelValue(props.max);
     emits('update:modelValue', parseInt(value));
+};
+
+const handleInput = (event: Event) => {
+    internal.value = (event.target as HTMLInputElement).value;
 };
 
 const handleKeydown = (event: KeyboardEvent) => {
