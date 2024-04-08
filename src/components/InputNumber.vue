@@ -31,7 +31,7 @@ const internal = ref<number | string>(props.modelValue);
 
 watch(() => props.modelValue, (newValue, oldValue) => {
     if (newValue !== oldValue) internal.value = newValue;
-});
+}, { immediate: true });
 
 const emitUpdateModelValue = (event: Event) => {
     const updateModelAndEmitUpdateModelValue = (value: number) => {
