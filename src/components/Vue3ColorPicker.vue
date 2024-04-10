@@ -45,16 +45,11 @@
     <div v-show="false" id="ck-cp-target-background"></div>
 
     <div v-if="isReady && showInputSet" class="ck-cp-input-container">
-      <div v-if="inputType !== 'CMYK'" class="ck-cp-input-content color-hex">
-        <span class="ck-cp-input-label">HEX</span>
-        <input
-          type="text"
-          v-model="hexVal"
-          @input="handleHexOnChange"
-          @keydown="handleHexKeydown"
-          @blur="handleHexOnBlur"
-        />
-      </div>
+      <InputHex
+        v-if="inputType !== 'CMYK'"
+        v-model="hexVal"
+        @update:model-value="applyHex"
+      />
 
       <InputNumber
         v-if="inputType == 'RGB'"
@@ -198,6 +193,7 @@ import PickerWrap from "./PickerWrap.vue";
 import PickerHue from "./PickerHue.vue";
 import OpacityBar from "./OpacityBar.vue";
 import InputNumber from "./InputNumber.vue";
+import InputHex from "./InputHex.vue";
 import {
   hex8ToRgba,
   hexToRgb,
@@ -1058,47 +1054,12 @@ const handleCMYKInput = () => {
   }
 };
 
-let lastHexValue: string;
-
-const handleHexOnChange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  if (!(target instanceof HTMLInputElement)) {
-    return; // Güvenlik kontrolü, eğer hedef bir input değilse işlemi durdurur
-  }
-
-  hexVal.value = `#${target.value.replace(/#/g, "")}`;
-};
-
 const applyHex = () => {
   if (hexVal.value) {
-    let val = hexVal.value.replace(/#/g, "");
-
-    switch (val.length) {
-      case 0:
-        val = lastHexValue.replace('#', '');
-        break;
-      case 1:
-      case 2:
-        val = val.repeat(3);
-        break;
-      case 4:
-      case 5:
-        val = val.slice(0, 3);
-        break;
-      case 3:
-      case 6:
-        break;
-      default:
-        val = val.slice(0, 6);
-    }
-
-    hexVal.value = `#${val.toUpperCase()}`;
-
     const rgb = hexToRgb(hexVal.value);
 
     if (rgb) {
       const hueVal = rgbToHue(rgb.r, rgb.g, rgb.b);
-      lastHexValue = hexVal.value;
       const selectItem = colorList.value.find((item) => item.select == true);
       if (selectItem) {
         selectItem.r = rgb.r;
@@ -1115,17 +1076,10 @@ const applyHex = () => {
   }
 }
 
-const handleHexKeydown = (event: KeyboardEvent) => {
-  if (event.key === 'Enter') applyHex();
-};
-
-const handleHexOnBlur = applyHex;
-
 const onChangeSetToHexValue = () => {
   const item = colorList.value.find((item) => item.select == true);
   if (item) {
     hexVal.value = rgb2Hex(item.r, item.g, item.b).toUpperCase();
-    lastHexValue = hexVal.value;
   }
   handleChangeInputType(inputType.value);
 };
@@ -1135,7 +1089,6 @@ const handleColorItemOnClick = (color: string) => {
   let val = hexToRgb(hexVal.value);
   if (val) {
     const hueVal = rgbToHue(val.r, val.g, val.b);
-    lastHexValue = hexVal.value;
     const selectItem = colorList.value.find((item) => item.select == true);
     if (selectItem) {
       selectItem.r = val.r;
