@@ -1,7 +1,7 @@
 
 <template>
   <div>
-    <h1 class="d-flex w-100 align-items-center justify-content-between"><label class="me-10">Vue 3 Color Picker <span class="ms-4" style="font-size: 12px; color: #ddd;">v 1.1.8</span></label>
+    <h1 class="d-flex w-100 align-items-center justify-content-between"><label class="me-10">Vue 3 Color Picker <span class="ms-4" style="font-size: 12px; color: #ddd;">v 1.1.9</span></label>
       <a class=" btn btn-sm rounded-circle btn-light" style="width: 40px; height: 40px;padding: 3px 3px;"
         href="https://github.com/cyhnkckali/vue3-color-picker" data-hotkey="g d" aria-label="Homepage " data-turbo="false"
         data-analytics-event="{&quot;category&quot;:&quot;Header&quot;,&quot;action&quot;:&quot;go to dashboard&quot;,&quot;label&quot;:&quot;icon:logo&quot;}">
