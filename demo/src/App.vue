@@ -1,7 +1,7 @@
 
 <template>
   <div>
-    <h1 class="d-flex w-100 align-items-center justify-content-between"><label class="me-10">Vue 3 Color Picker <span class="ms-4" style="font-size: 12px; color: #ddd;">v 1.1.9</span></label>
+    <h1 class="d-flex w-100 align-items-center justify-content-between"><label class="me-10">Vue 3 Color Picker <span class="ms-4" style="font-size: 12px; color: #ddd;">v 2.0.0</span></label>
       <a class=" btn btn-sm rounded-circle btn-light" style="width: 40px; height: 40px;padding: 3px 3px;"
         href="https://github.com/cyhnkckali/vue3-color-picker" data-hotkey="g d" aria-label="Homepage " data-turbo="false"
         data-analytics-event="{&quot;category&quot;:&quot;Header&quot;,&quot;action&quot;:&quot;go to dashboard&quot;,&quot;label&quot;:&quot;icon:logo&quot;}">
@@ -18,15 +18,9 @@
       <Vue3ColorPicker class="test" v-if="isShow" style="width: 270px;" v-model="color" :mode="props.mode"
         :theme="props.theme" :show-alpha="props.showAlpha" :show-color-list="props.showList" :input-type="props.inputType"
         :show-eye-drop="props.showEye" :show-input-menu="props.showMenu" :color-list-count="16"
-        :show-input-set="props.showSet" :type="props.type" @update:modelValue="handleChange" :disabled="props.disabled" />
+        :show-input-set="props.showSet" :type="props.type" @update:modelValue="handleChange" :disabled="props.disabled"  :showPickerMode="props.showPickerMode" />
 
       <div class="row m-0" style="max-width: 310px;">
-        <label class="form-label text-white m-0 p-0 mb-1">Mode</label>
-        <select class="form-select form-select-sm mb-2" aria-label="Default select example" v-model="props.mode"
-          @change="resetComponent">
-          <option value="gradient">Gradient</option>
-          <option value="solid">Solid</option>
-        </select>
         <label class="form-label text-white m-0 p-0 mb-1">Theme</label>
         <select class="form-select form-select-sm mb-2" aria-label="Default select example" v-model="props.theme">
           <option value="light">Light</option>
@@ -69,9 +63,15 @@
           <label class="form-check-label text-white" for="showMenu">Show Input Menu (showInputMenu)</label>
         </div>
         <div class="form-check form-switch mb-2">
+          <input class="form-check-input " type="checkbox" role="switch" id="disabled" v-model="props.showPickerMode">
+          <label class="form-check-label text-white" for="disabled">Show Picker Mode Input</label>
+        </div>
+        
+        <div class="form-check form-switch mb-2">
           <input class="form-check-input " type="checkbox" role="switch" id="disabled" v-model="props.disabled">
           <label class="form-check-label text-white" for="disabled">Disabled (disabled)</label>
         </div>
+
       </div>
     </div>
   </div>
@@ -93,6 +93,8 @@ const props=reactive({
   showEye:true,
   showMenu:true,
   showSet:true,
+  showPickerMode:true,
+  show:true,
   disabled:false,
 })
 
