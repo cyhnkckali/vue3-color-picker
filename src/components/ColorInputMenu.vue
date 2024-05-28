@@ -1,59 +1,46 @@
 <template>
-    <ul class="color-input-menu">
-        <li :class="inputType == 'RGB' ? 'active' : ''" @click="handleClick('RGB')">RGB</li>
-        <li :class="inputType == 'HSL' ? 'active' : ''" @click="handleClick('HSL')">HSL</li>
-        <li :class="inputType == 'HSV' ? 'active' : ''" @click="handleClick('HSV')">HSV</li>
-        <li :class="inputType == 'CMYK' ? 'active' : ''" @click="handleClick('CMYK')">CMYK</li>
-    </ul>
+  <button type="button" class="cp-btn" @click="handleClick">
+    {{ inputType }}
+    <i v-if="iconClass" :class="iconClass"></i>
+    <svg
+      v-else
+      width="16"
+      height="16"
+      viewBox="-12 -4 32 32"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M11.9995 16.8001C11.2995 16.8001 10.5995 16.5301 10.0695 16.0001L3.54953 9.48014C3.25953 9.19014 3.25953 8.71014 3.54953 8.42014C3.83953 8.13014 4.31953 8.13014 4.60953 8.42014L11.1295 14.9401C11.6095 15.4201 12.3895 15.4201 12.8695 14.9401L19.3895 8.42014C19.6795 8.13014 20.1595 8.13014 20.4495 8.42014C20.7395 8.71014 20.7395 9.19014 20.4495 9.48014L13.9295 16.0001C13.3995 16.5301 12.6995 16.8001 11.9995 16.8001Z"
+      />
+    </svg>
+  </button>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { InputType } from '../core/types/types.ts';
+import { ref } from "vue";
+import { InputType } from "../core/types/types.ts";
 const props = defineProps({
-    inputType: { default: 'RGB', type: String as () => InputType, },
-})
+  iconClass: { default: "", type: String },
+  inputType: { default: "RGB", type: String as () => InputType },
+});
 
-const inputType = ref(props.inputType)
+const inputType = ref(props.inputType);
+
+const inputTypes: InputType[] = ["CMYK", "HSL", "HSV", "RGB"];
 
 const emits = defineEmits<{
-    (e: 'onChangeInputName', value: InputType): void,
-}>()
+  (e: "onChangeInputName", value: InputType): void;
+}>();
 
-const handleClick = (type: InputType) => {
-    inputType.value = type
-    emits("onChangeInputName", type)
-}
+const handleClick = () => {
+  const ind = inputTypes.findIndex((item) => item == inputType.value);
 
+  const type = inputTypes[ind + 1] ? inputTypes[ind + 1] : inputTypes[0];
+
+  inputType.value = type;
+
+  emits("onChangeInputName", type);
+};
 </script>
 
-<style lang="scss" >
-.ck-cp-container .color-input-menu {
-    position: absolute;
-    z-index: 100;
-    background-color: var(--cp-input-menu-bg);
-    padding: 5px;
-    border-radius: 8px;
-    top: 20px;
-    right: 0;
-    box-shadow: 0px 0px 15px 0px var(--cp-container-shadow);
-    width: 83px;
-}
-
-.ck-cp-container .color-input-menu li {
-    list-style: none;
-    text-align: center;
-    padding: 5px 10px;
-    user-select: none;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--cp-label-color);
-    border-radius: 4px;
-}
-
-.ck-cp-container .color-input-menu li.active {
-    background-color: var(--cp-border-color);
-    color: var(--cp-act-color);
-}
-</style>
+<style lang="scss"></style>

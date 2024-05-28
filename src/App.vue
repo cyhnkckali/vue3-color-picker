@@ -12,13 +12,16 @@ onMounted(() => {
 </script>
 
 <template>
-  <p style="color: #ccc;">{{ color }}</p>
-  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="dark" :local="{ angle: 'Ceyhun' }"
-    input-type="RGB" :disabled="false" />
+  <p style="color: #ccc;position: absolute;top:0">{{ color }}</p>
+  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="light" mode="solid"  :show-picker-mode="true" :show-input-menu="true" :show-color-list="true" :show-eye-drop="true"
+    input-type="RGB" :disabled="false"/>
 </template>
 
 <style>
 body {
   height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

@@ -6,14 +6,17 @@ export interface Local {
 	angle?: string
 	positionX?: string
 	positionY?: string
+	solid?: string
+	gradient?: string
+	linear?: string
+	radial?: string
+	colorPalate?: string
 }
 
 export interface IconClasses {
-	linear?: string
-	radial?: string
 	ruler?: string
 	eyeDroper?: string
-	inputMenu?: string
+	arrowDown?: string
 	save?: string
 	delete?: string
 }
@@ -51,6 +54,7 @@ export interface Vue3ColorPickerProps {
 	showColorList: boolean
 	showEyeDrop: boolean
 	showAlpha: boolean
+	showPickerMode: boolean
 	showInputMenu: boolean
 	showInputSet: boolean
 	disabled: boolean
