@@ -22,10 +22,9 @@ Download 1.1.9 to continue with the old version !!!
 
 
 
-![gradient](https://github.com/cyhnkckali/vue3-color-picker/assets/93313260/51d65816-4aac-4912-a6ea-67a24c84d9c5)
+![gradient](https://github.com/cyhnkckali/vue3-color-picker/assets/93313260/71d94ada-5c38-4fcb-b1be-610193c55112)
+![solid](https://github.com/cyhnkckali/vue3-color-picker/assets/93313260/67511957-7983-4056-b136-54ccbaad9baf)
 
-
-![solid](https://github.com/cyhnkckali/vue3-color-picker/assets/93313260/e3495dc9-79a5-43be-9783-5f52ff19009c)
 
 
 ## Install
