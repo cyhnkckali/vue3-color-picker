@@ -11,7 +11,7 @@ Fully customisable!
 * Ability to change mode instantly
 * Change the value in the colour list
 * Delete a value in the colour list
-* Yeni stil değişkenleri
+* New style variables
 * New ui design
 
 Don't forget to star for motivation :)
