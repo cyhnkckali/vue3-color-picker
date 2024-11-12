@@ -1506,8 +1506,18 @@ const handleSave = () => {
   emits("update:modelValue", emittedValue.value);
 };
 
+const clearGradient = () => {
+  colorList.value.forEach((item: Record<string, any>) => {
+    const deleteElement = gradientMouseBar?.querySelector(
+      `#clr-gb-${item.id}`
+    );
+    deleteElement?.remove();
+  });
+}
+
 const handleCancel = () => {
   localValue.value = emittedValue.value;
+  clearGradient();
   applyValue(localValue.value);
 };
 
@@ -1515,12 +1525,7 @@ watch(
   () => props.modelValue,
   (newValue: string, oldValue: string) => {
     if (newValue !== oldValue && newValue !== emittedValue.value) {
-      colorList.value.forEach((item: Record<string, any>) => {
-        const deleteElement = gradientMouseBar?.querySelector(
-          `#clr-gb-${item.id}`
-        );
-        deleteElement?.remove();
-      });
+      clearGradient();
       applyValue(newValue);
     }
   }
