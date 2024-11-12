@@ -2,7 +2,7 @@
   <div class="ck-cp-local-color-conatiner">
     <div class="ck-cp-color-list-label">
       <div style="display: flex; align-items: center">
-        {{ title ? title : "Color Palate" }}
+        {{ title ? title : "Color Palette" }}
 
         <i v-if="iconClasses.arrowDown" :class="iconClasses.arrowDown"></i>
         <svg

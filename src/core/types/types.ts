@@ -10,7 +10,7 @@ export interface Local {
 	gradient?: string
 	linear?: string
 	radial?: string
-	colorPalate?: string
+	colorPalette?: string
 }
 
 export interface IconClasses {
