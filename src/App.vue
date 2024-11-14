@@ -13,8 +13,8 @@ onMounted(() => {
 
 <template>
   <p style="color: #ccc;position: absolute;top:0">{{ color }}</p>
-  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="light" mode="solid"  :show-picker-mode="true" :show-input-menu="true" :show-color-list="true" :show-eye-drop="true"
-    input-type="RGB" :disabled="false"/>
+  <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="light" mode="gradient"
+    gradient-mode="radial" />
 </template>
 
 <style>
