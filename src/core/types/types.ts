@@ -4,14 +4,14 @@ export type Theme = "light" | "dark";
 export type InputType = "RGB" | "HSL" | "HSV" | "CMYK";
 export type GradientMode = "linear" | "radial";
 export interface Local {
-  angle?: string;
-  positionX?: string;
-  positionY?: string;
-  solid?: string;
-  gradient?: string;
-  linear?: string;
-  radial?: string;
-  colorPalate?: string;
+	angle?: string
+	positionX?: string
+	positionY?: string
+	solid?: string
+	gradient?: string
+	linear?: string
+	radial?: string
+	colorPalette?: string
 }
 
 export interface IconClasses {

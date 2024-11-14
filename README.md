@@ -80,7 +80,7 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 | `type` | `string` | Return colour value type `HEX8` `RGBA` `RGB` `HEX` default `HEX8`|
 | `inputType` | `string` | Input type of colour values `RGB` `HSL` `HSV` `CMYK` default `RGB`|
 | `disabled` | `boolean` | default `false` |
-| `local` | `object` | default `{ angle: '', positionX: '', positionY: '', solid: '', gradient: '', linear: '', radial: '', colorPalate: '',  }` |
+| `local` | `object` | default `{ angle: '', positionX: '', positionY: '', solid: '', gradient: '', linear: '', radial: '', colorPalette: '',  }` |
 | `colorListCount` | `number` | Determines how many colours to keep in the colour list default `18`|
 | `showColorList` | `boolean` | default `true` |
 | `showEyeDrop` | `boolean` | default `true` Supports Chrome and Edge only |
@@ -89,6 +89,9 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 | `showInputSet` | `boolean` | default `true` |
 | `showPickerMode` | `boolean` | default `true` |
 | `iconClasses` | `object` | default `{ ruler: '', eyeDroper: '', arrowDown: '', save: '', delete: '' }` |
+| `showButtons` | `boolean` | default `true` |
+| `saveButtonLabel` | `string` | default `Save` |
+| `cancelButtonLabel` | `string` | default `Cancel` |
 
 
 ## CSS Colour Variables

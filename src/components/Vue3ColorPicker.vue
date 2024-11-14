@@ -111,8 +111,35 @@
         @update:model-value="(value) => handleRGBAInput(value, 'a')" />
     </div>
 
-    <HistoryColorList v-if="showColorList" :color-list-count="colorListCount" :hex-val="hexVal"
-      @color-item-click="handleColorItemOnClick" :iconClasses="iconClasses" :title="local.colorPalate" />
+
+    <HistoryColorList
+      v-if="showColorList"
+      :color-list-count="colorListCount"
+      :hex-val="hexVal"
+      @color-item-click="handleColorItemOnClick"
+      :iconClasses="iconClasses"
+      :title="local.colorPalette"
+    />
+    <div
+      v-if="showButtons"
+      class="ck-cp-buttons"
+    >
+      <button
+        class="ck-cp-buttons__button ck-cp-buttons__button--save"
+        type="button"
+        @click="handleSave"
+      >
+        {{ saveButtonLabel }}
+      </button>
+      <button
+        class="ck-cp-buttons__button ck-cp-buttons__button--cancel"
+        type="button"
+        @click="handleCancel"
+      >
+        {{ cancelButtonLabel }}
+      </button>
+    </div>
+
   </div>
 </template>
 
@@ -184,7 +211,7 @@ const props = defineProps({
       gradient: "",
       linear: "",
       radial: "",
-      colorPalate: "",
+      colorPalette: "",
     },
     type: Object as () => Local,
   },
@@ -200,6 +227,18 @@ const props = defineProps({
     },
     type: Object as () => IconClasses,
   },
+  showButtons: {
+    type: Boolean,
+    default: false
+  },
+  saveButtonLabel: {
+    type: String,
+    default: 'Save',
+  },
+  cancelButtonLabel: {
+    type: String,
+    default: 'Cancel',
+  },
 });
 
 const pickerTemplateRef = ref<HTMLElement | null>(null);
@@ -210,11 +249,15 @@ const emits = defineEmits<{
 
 const PickerMode = ref(props.mode);
 
+const localValue = ref(props.modelValue);
 const emittedValue = ref(props.modelValue);
 
 const emitUpdateModelValue = (value: string) => {
-  emittedValue.value = value;
-  emits("update:modelValue", value);
+  localValue.value = value;
+  if (!props.showButtons) {
+    emittedValue.value = value;
+    emits("update:modelValue", value);
+  }
 };
 
 const colorList = ref<Color[]>([
@@ -1325,16 +1368,31 @@ const applyValue = (value: string) => {
   }
 };
 
+const handleSave = () => {
+  emittedValue.value = localValue.value;
+  emits("update:modelValue", emittedValue.value);
+};
+
+const clearGradient = () => {
+  colorList.value.forEach((item: Record<string, any>) => {
+    const deleteElement = gradientMouseBar?.querySelector(
+      `#clr-gb-${item.id}`
+    );
+    deleteElement?.remove();
+  });
+}
+
+const handleCancel = () => {
+  localValue.value = emittedValue.value;
+  clearGradient();
+  applyValue(localValue.value);
+};
+
 watch(
   () => props.modelValue,
   (newValue: string, oldValue: string) => {
     if (newValue !== oldValue && newValue !== emittedValue.value) {
-      colorList.value.forEach((item: Record<string, any>) => {
-        const deleteElement = gradientMouseBar?.querySelector(
-          `#clr-gb-${item.id}`
-        );
-        deleteElement?.remove();
-      });
+      clearGradient();
       applyValue(newValue);
     }
   }
@@ -1940,5 +1998,31 @@ onMounted(() => {
 
 .ck-cp-color-list-label svg {
   fill: var(--cp-gray-700);
+}
+
+.ck-cp-buttons {
+  padding: 20px 10px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 8px;
+
+  &__button {
+    font-size: 14px;
+    padding: 5px 15px;
+    background-color: var(--cp-container-bg);
+    border: 1px solid var(--cp-gray-300);
+    color: var(--cp-gray-900);
+    border-radius: 5px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: var(--cp-gray-200);
+    }
+
+    &:active {
+      background-color: var(--cp-gray-100);
+    }
+  }
 }
 </style>
