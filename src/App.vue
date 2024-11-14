@@ -14,7 +14,7 @@ onMounted(() => {
 <template>
   <p style="color: #ccc;position: absolute;top:0">{{ color }}</p>
   <Vue3ColorPicker v-model="color" @update:model-value="handleModel" theme="dark" mode="gradient" gradient-mode="radial"
-    show-buttons />
+    :show-buttons="false" />
 </template>
 
 <style>
