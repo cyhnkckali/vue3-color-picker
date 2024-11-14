@@ -112,31 +112,14 @@
     </div>
 
 
-    <HistoryColorList
-      v-if="showColorList"
-      :color-list-count="colorListCount"
-      :hex-val="hexVal"
-      @color-item-click="handleColorItemOnClick"
-      :iconClasses="iconClasses"
-      :title="local.colorPalette"
-    />
-    <div
-      v-if="showButtons"
-      class="ck-cp-buttons"
-    >
-      <button
-        class="ck-cp-buttons__button ck-cp-buttons__button--save"
-        type="button"
-        @click="handleSave"
-      >
-        {{ saveButtonLabel }}
+    <HistoryColorList v-if="showColorList" :color-list-count="colorListCount" :hex-val="hexVal"
+      @color-item-click="handleColorItemOnClick" :iconClasses="iconClasses" :title="local.colorPalette" />
+    <div v-if="showButtons" class="ck-cp-buttons">
+      <button class="ck-cp-buttons__button ck-cp-buttons__button--save" type="button" @click="handleSave">
+        {{ local.btnSaveLabel }}
       </button>
-      <button
-        class="ck-cp-buttons__button ck-cp-buttons__button--cancel"
-        type="button"
-        @click="handleCancel"
-      >
-        {{ cancelButtonLabel }}
+      <button class="ck-cp-buttons__button ck-cp-buttons__button--cancel" type="button" @click="handleCancel">
+        {{ local.btnCancelLabel }}
       </button>
     </div>
 
@@ -212,6 +195,8 @@ const props = defineProps({
       linear: "",
       radial: "",
       colorPalette: "",
+      btnSaveLabel: "Save",
+      btnCancelLabel: "Cancel",
     },
     type: Object as () => Local,
   },
@@ -231,14 +216,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  saveButtonLabel: {
-    type: String,
-    default: 'Save',
-  },
-  cancelButtonLabel: {
-    type: String,
-    default: 'Cancel',
-  },
+
 });
 
 const pickerTemplateRef = ref<HTMLElement | null>(null);
@@ -2005,19 +1983,19 @@ onMounted(() => {
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  column-gap: 8px;
+  column-gap: 4px;
 
   &__button {
-    font-size: 14px;
+    font-size: 12px;
     padding: 5px 15px;
     background-color: var(--cp-container-bg);
-    border: 1px solid var(--cp-gray-300);
-    color: var(--cp-gray-900);
+    border: none;
+    color: var(--cp-gray-800);
     border-radius: 5px;
 
     &:hover {
       cursor: pointer;
-      background-color: var(--cp-gray-200);
+      background-color: var(--cp-gray-100);
     }
 
     &:active {

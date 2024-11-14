@@ -4,14 +4,16 @@ export type Theme = "light" | "dark";
 export type InputType = "RGB" | "HSL" | "HSV" | "CMYK";
 export type GradientMode = "linear" | "radial";
 export interface Local {
-	angle?: string
-	positionX?: string
-	positionY?: string
-	solid?: string
-	gradient?: string
-	linear?: string
-	radial?: string
-	colorPalette?: string
+  angle?: string;
+  positionX?: string;
+  positionY?: string;
+  solid?: string;
+  gradient?: string;
+  linear?: string;
+  radial?: string;
+  colorPalette?: string;
+  btnSaveLabel?: string;
+  btnCancelLabel?: string;
 }
 
 export interface IconClasses {
@@ -62,4 +64,5 @@ export interface Vue3ColorPickerProps {
   local: Local;
   iconClasses: IconClasses;
   gradientMode: GradientMode;
+  showButtons: boolean;
 }
