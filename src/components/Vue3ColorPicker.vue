@@ -823,7 +823,10 @@ const setGradientBarColor = () => {
       default:
         break;
     }
-    emitUpdateModelValue(val);
+
+    if (isReady.value) {
+      emitUpdateModelValue(val);
+    }
   }
 };
 
@@ -1331,7 +1334,6 @@ const handleChangePickerMode = (event: Mode) => {
       ) as HTMLElement;
     }
 
-    console.log(props.modelValue)
     applyValue(props.modelValue);
     handleChangeInputType(inputType.value);
   }, 0);
