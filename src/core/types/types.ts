@@ -3,6 +3,9 @@ export type Mode = "gradient" | "solid";
 export type Theme = "light" | "dark";
 export type InputType = "RGB" | "HSL" | "HSV" | "CMYK";
 export type GradientMode = "linear" | "radial";
+
+export type ModelValue = string | null | undefined;
+
 export interface Local {
   angle?: string;
   positionX?: string;
@@ -49,6 +52,7 @@ export interface RGBA {
 }
 
 export interface Vue3ColorPickerProps {
+  modelValue: ModelValue;
   mode: Mode;
   type: ColorType;
   theme: Theme;

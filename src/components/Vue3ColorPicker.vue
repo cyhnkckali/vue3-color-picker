@@ -163,12 +163,13 @@ import {
   InputType,
   Local,
   IconClasses,
-  GradientMode
+  GradientMode,
+  ModelValue
 } from "../core/types/types.ts";
 import HistoryColorList from "./HistoryColorList.vue";
 
 const props = defineProps({
-  modelValue: { default: "" },
+  modelValue: { default: "", type: String as () => ModelValue },
   mode: {
     default: "gradient",
     type: String as () => Mode,
@@ -1088,8 +1089,9 @@ if (window.EyeDropper) {
 }
 
 const parseVModelString = (value = "") => {
+
   if (PickerMode.value == "gradient") {
-    let type = gradientType.value;
+    let type = value ? value.includes('linear-gradient') ? 'linear' : 'radial' : props.gradientMode;
     let newColorList = [];
 
     gradientType.value = type as GradientMode;
@@ -1220,6 +1222,8 @@ const parseVModelString = (value = "") => {
       colorList.value[0].select = true;
       opacity.value = colorList.value[0].a;
     }
+
+    console.log(newColorList)
   } else {
     if (value) {
       let color: RGBA | null = {
@@ -1334,12 +1338,13 @@ const handleChangePickerMode = (event: Mode) => {
       ) as HTMLElement;
     }
 
-    applyValue(props.modelValue);
+    applyValue(props.modelValue as string);
     handleChangeInputType(inputType.value);
   }, 0);
 };
 
 const applyValue = (value: string) => {
+
   if (!value) {
     setFirstEmptyValue();
   } else {
@@ -1350,7 +1355,7 @@ const applyValue = (value: string) => {
 
 const handleSave = () => {
   emittedValue.value = localValue.value;
-  emits("update:modelValue", emittedValue.value);
+  emits("update:modelValue", emittedValue.value as string);
 };
 
 const clearGradient = () => {
@@ -1365,11 +1370,11 @@ const clearGradient = () => {
 const handleCancel = () => {
   localValue.value = emittedValue.value;
   clearGradient();
-  applyValue(localValue.value);
+  applyValue(localValue.value as string);
 };
 
 watch(
-  () => props.modelValue,
+  () => props.modelValue as string,
   (newValue: string, oldValue: string) => {
     if (newValue !== oldValue && newValue !== emittedValue.value) {
       clearGradient();
@@ -1384,7 +1389,7 @@ onMounted(() => {
       ".gradient-bar"
     ) as HTMLElement;
   }
-  applyValue(props.modelValue);
+  applyValue(props.modelValue as string);
   handleChangeInputType(inputType.value);
   isReady.value = true;
 });
