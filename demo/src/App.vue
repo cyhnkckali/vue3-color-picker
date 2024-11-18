@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="d-flex w-100 align-items-center justify-content-between"><label class="me-10">Vue 3 Color Picker <span
-          class="ms-4" style="font-size: 12px; color: #ddd;">v 2.0.4</span></label>
+          class="ms-4" style="font-size: 12px; color: #ddd;">v 2.0.6</span></label>
 
 
       <div class="d-flex gap-2">
@@ -36,7 +36,8 @@
         :theme="props.theme" :show-alpha="props.showAlpha" :show-color-list="props.showList"
         :input-type="props.inputType" :show-eye-drop="props.showEye" :show-input-menu="props.showMenu"
         :color-list-count="16" :show-input-set="props.showSet" :type="props.type" @update:modelValue="handleChange"
-        :disabled="props.disabled" :showPickerMode="props.showPickerMode" :showButtons="props.showButtons" />
+        :disabled="props.disabled" :showPickerMode="props.showPickerMode" :showButtons="props.showButtons"
+        gradient-mode="radial" />
 
       <div class="row m-0" style="max-width: 310px;">
         <label class="form-label text-white m-0 p-0 mb-1">Theme</label>
@@ -111,7 +112,7 @@ const props = reactive({
   theme: 'light',
   type: 'HEX8',
   inputType: 'RGB',
-  showButtons: true,
+  showButtons: false,
   showAlpha: true,
   showList: true,
   showEye: true,
