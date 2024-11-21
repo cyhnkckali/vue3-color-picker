@@ -1222,8 +1222,6 @@ const parseVModelString = (value = "") => {
       colorList.value[0].select = true;
       opacity.value = colorList.value[0].a;
     }
-
-    console.log(newColorList)
   } else {
     if (value) {
       let color: RGBA | null = {
