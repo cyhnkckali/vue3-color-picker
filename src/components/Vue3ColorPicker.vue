@@ -1100,6 +1100,9 @@ const parseVModelString = (value = "") => {
       let matches = value.replace(";", "").trim().match(regexPattern);
       let parsValueRGX = /,\s*(?![^()]*\))/;
 
+      if (!value.includes('deg'))
+        gradientAngle.angle = 180
+
       if (matches) {
         let valueList = matches[1].split(parsValueRGX);
 

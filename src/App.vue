@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import Vue3ColorPicker from './components/Vue3ColorPicker.vue'
 
-const color = ref()
+const color = ref('linear-gradient(rgb(8, 177, 255) 0%, rgb(107, 255, 243) 100%)')
 const handleModel = (e: string) => {
   document.body.style.background = e;
 }
