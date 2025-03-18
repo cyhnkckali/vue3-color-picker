@@ -1,68 +1,126 @@
 <template>
-  <div class="ck-cp-container" ref="pickerTemplateRef" :cp-theme="theme" :class="disabled ? 'ck-cp-disabled ' : ''">
-    <PickerMenu v-model:angle="gradientAngle.angle" v-model:percentageX="gradientAngle.percentageX"
-      v-model:percentageY="gradientAngle.percentageY" :local="local" :iconClasses="iconClasses" :inputType="inputType"
-      :mode="PickerMode" :showInputMenu="showInputMenu" :gradientType="gradientType" :showPickerMode="showPickerMode"
-      @onChangeMode="setBackgroundType" @onInput="setGradientBarColor" @onClickEyeDropper="handleOnClickEyeDropper"
-      @onDeleteColor="deleteColor" @onChangeInputType="handleChangeInputType"
-      @on-picker-change-mode="handleChangePickerMode" />
+  <div
+    class="ck-cp-container"
+    ref="pickerTemplateRef"
+    :cp-theme="theme"
+    :class="disabled ? 'ck-cp-disabled ' : ''"
+  >
+    <PickerMenu
+      v-model:angle="gradientAngle.angle"
+      v-model:percentageX="gradientAngle.percentageX"
+      v-model:percentageY="gradientAngle.percentageY"
+      :local="local"
+      :iconClasses="iconClasses"
+      :inputType="inputType"
+      :mode="PickerMode"
+      :showInputMenu="showInputMenu"
+      :gradientType="gradientType"
+      :showPickerMode="showPickerMode"
+      @onChangeMode="setBackgroundType"
+      @onInput="setGradientBarColor"
+      @onClickEyeDropper="handleOnClickEyeDropper"
+      @onDeleteColor="deleteColor"
+      @onChangeInputType="handleChangeInputType"
+      @on-picker-change-mode="handleChangePickerMode"
+    />
 
-    <PickerWrap @onMouseDown="handlePickerStartOnMouseDown" />
+    <PickerWrap
+      @onEventStart="handlePickerStartOnMouseDown"
+      @onTouchStart="handlePickerStartOnTouchStart"
+    />
 
-    <div v-if="PickerMode == 'gradient'" style="
+    <div
+      v-if="PickerMode == 'gradient'"
+      style="
         display: flex;
         align-items: center;
         gap: 8px;
         margin-top: calc(var(--margin-top) * 1.35);
         padding: var(--padding);
-      ">
+      "
+    >
       <button type="button" class="cp-main-btn" @click="deleteColor">
         <i v-if="iconClasses.delete" :class="iconClasses.delete"></i>
-        <svg v-else width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          v-else
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path
-            d="M20.9997 6.72998C20.9797 6.72998 20.9497 6.72998 20.9197 6.72998C15.6297 6.19998 10.3497 5.99998 5.11967 6.52998L3.07967 6.72998C2.65967 6.76998 2.28967 6.46998 2.24967 6.04998C2.20967 5.62998 2.50967 5.26998 2.91967 5.22998L4.95967 5.02998C10.2797 4.48998 15.6697 4.69998 21.0697 5.22998C21.4797 5.26998 21.7797 5.63998 21.7397 6.04998C21.7097 6.43998 21.3797 6.72998 20.9997 6.72998Z" />
+            d="M20.9997 6.72998C20.9797 6.72998 20.9497 6.72998 20.9197 6.72998C15.6297 6.19998 10.3497 5.99998 5.11967 6.52998L3.07967 6.72998C2.65967 6.76998 2.28967 6.46998 2.24967 6.04998C2.20967 5.62998 2.50967 5.26998 2.91967 5.22998L4.95967 5.02998C10.2797 4.48998 15.6697 4.69998 21.0697 5.22998C21.4797 5.26998 21.7797 5.63998 21.7397 6.04998C21.7097 6.43998 21.3797 6.72998 20.9997 6.72998Z"
+          />
           <path
-            d="M8.50074 5.72C8.46074 5.72 8.42074 5.72 8.37074 5.71C7.97074 5.64 7.69074 5.25 7.76074 4.85L7.98074 3.54C8.14074 2.58 8.36074 1.25 10.6907 1.25H13.3107C15.6507 1.25 15.8707 2.63 16.0207 3.55L16.2407 4.85C16.3107 5.26 16.0307 5.65 15.6307 5.71C15.2207 5.78 14.8307 5.5 14.7707 5.1L14.5507 3.8C14.4107 2.93 14.3807 2.76 13.3207 2.76H10.7007C9.64074 2.76 9.62074 2.9 9.47074 3.79L9.24074 5.09C9.18074 5.46 8.86074 5.72 8.50074 5.72Z" />
+            d="M8.50074 5.72C8.46074 5.72 8.42074 5.72 8.37074 5.71C7.97074 5.64 7.69074 5.25 7.76074 4.85L7.98074 3.54C8.14074 2.58 8.36074 1.25 10.6907 1.25H13.3107C15.6507 1.25 15.8707 2.63 16.0207 3.55L16.2407 4.85C16.3107 5.26 16.0307 5.65 15.6307 5.71C15.2207 5.78 14.8307 5.5 14.7707 5.1L14.5507 3.8C14.4107 2.93 14.3807 2.76 13.3207 2.76H10.7007C9.64074 2.76 9.62074 2.9 9.47074 3.79L9.24074 5.09C9.18074 5.46 8.86074 5.72 8.50074 5.72Z"
+          />
           <path
-            d="M15.2104 22.7501H8.79039C5.30039 22.7501 5.16039 20.8201 5.05039 19.2601L4.40039 9.19007C4.37039 8.78007 4.69039 8.42008 5.10039 8.39008C5.52039 8.37008 5.87039 8.68008 5.90039 9.09008L6.55039 19.1601C6.66039 20.6801 6.70039 21.2501 8.79039 21.2501H15.2104C17.3104 21.2501 17.3504 20.6801 17.4504 19.1601L18.1004 9.09008C18.1304 8.68008 18.4904 8.37008 18.9004 8.39008C19.3104 8.42008 19.6304 8.77007 19.6004 9.19007L18.9504 19.2601C18.8404 20.8201 18.7004 22.7501 15.2104 22.7501Z" />
+            d="M15.2104 22.7501H8.79039C5.30039 22.7501 5.16039 20.8201 5.05039 19.2601L4.40039 9.19007C4.37039 8.78007 4.69039 8.42008 5.10039 8.39008C5.52039 8.37008 5.87039 8.68008 5.90039 9.09008L6.55039 19.1601C6.66039 20.6801 6.70039 21.2501 8.79039 21.2501H15.2104C17.3104 21.2501 17.3504 20.6801 17.4504 19.1601L18.1004 9.09008C18.1304 8.68008 18.4904 8.37008 18.9004 8.39008C19.3104 8.42008 19.6304 8.77007 19.6004 9.19007L18.9504 19.2601C18.8404 20.8201 18.7004 22.7501 15.2104 22.7501Z"
+          />
           <path
-            d="M13.6601 17.25H10.3301C9.92008 17.25 9.58008 16.91 9.58008 16.5C9.58008 16.09 9.92008 15.75 10.3301 15.75H13.6601C14.0701 15.75 14.4101 16.09 14.4101 16.5C14.4101 16.91 14.0701 17.25 13.6601 17.25Z" />
+            d="M13.6601 17.25H10.3301C9.92008 17.25 9.58008 16.91 9.58008 16.5C9.58008 16.09 9.92008 15.75 10.3301 15.75H13.6601C14.0701 15.75 14.4101 16.09 14.4101 16.5C14.4101 16.91 14.0701 17.25 13.6601 17.25Z"
+          />
           <path
-            d="M14.5 13.25H9.5C9.09 13.25 8.75 12.91 8.75 12.5C8.75 12.09 9.09 11.75 9.5 11.75H14.5C14.91 11.75 15.25 12.09 15.25 12.5C15.25 12.91 14.91 13.25 14.5 13.25Z" />
+            d="M14.5 13.25H9.5C9.09 13.25 8.75 12.91 8.75 12.5C8.75 12.09 9.09 11.75 9.5 11.75H14.5C14.91 11.75 15.25 12.09 15.25 12.5C15.25 12.91 14.91 13.25 14.5 13.25Z"
+          />
         </svg>
       </button>
 
-      <GradientBar @onAddColor="addColor" @onMouseDown="handleGradientItemOnMouseDown" />
+      <GradientBar
+        @onAddColor="addColor"
+        @onMouseDown="handleGradientItemOnMouseDown"
+      />
     </div>
-    <div style="
+    <div
+      style="
         display: flex;
         align-items: center;
         gap: 8px;
         margin-top: calc(var(--margin-top) * 1.35);
         padding: var(--padding);
-      ">
-      <button type="button" v-if="isEyeDropperUsing && showEyeDrop" id="cp-btn-eyedropper" class="cp-main-btn"
-        @click="handleOnClickEyeDropper">
+      "
+    >
+      <button
+        type="button"
+        v-if="isEyeDropperUsing && showEyeDrop"
+        id="cp-btn-eyedropper"
+        class="cp-main-btn"
+        @click="handleOnClickEyeDropper"
+      >
         <i v-if="iconClasses.eyeDroper" :class="iconClasses.eyeDroper"></i>
         <!-- Generated by IcoMoon.io -->
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="3 2 28 28">
+        <svg
+          version="1.1"
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="3 2 28 28"
+        >
           <path
-            d="M27.014 2.891l-0.058-0.058c-1.106-1.11-2.911-1.11-4.022 0l-2.515 2.515-0.072-0.072c-0.603-0.603-1.584-0.603-2.216 0.024-0.599 0.603-0.599 1.584 0 2.187l0.072 0.072-8.034 8.039c-1.135 1.13-1.878 2.617-2.1 4.2l-1.217 1.453c-0.483 0.483-0.483 1.265 0 1.743 0.241 0.246 0.565 0.367 0.883 0.367 0.304 0 0.608-0.111 0.826-0.338l1.487-1.241c1.584-0.227 3.071-0.97 4.205-2.1l8.034-8.039 0.072 0.072c0.299 0.299 0.69 0.449 1.086 0.449 0.401 0 0.811-0.159 1.13-0.478 0.29-0.29 0.449-0.676 0.449-1.091s-0.159-0.801-0.449-1.096l-0.072-0.068 2.515-2.515c1.106-1.11 1.106-2.916-0.005-4.027zM13.568 18.997c-1.014 1.014-2.356 1.671-3.78 1.844-0.092 0.014-0.179 0.048-0.251 0.111l-1.622 1.361c-0.106 0.106-0.275 0.106-0.381 0-0.101-0.106-0.101-0.275 0.029-0.41l1.337-1.593c0.058-0.072 0.097-0.159 0.106-0.251 0.174-1.424 0.83-2.766 1.844-3.78l8.039-8.034 2.718 2.718-8.039 8.034z">
-          </path>
+            d="M27.014 2.891l-0.058-0.058c-1.106-1.11-2.911-1.11-4.022 0l-2.515 2.515-0.072-0.072c-0.603-0.603-1.584-0.603-2.216 0.024-0.599 0.603-0.599 1.584 0 2.187l0.072 0.072-8.034 8.039c-1.135 1.13-1.878 2.617-2.1 4.2l-1.217 1.453c-0.483 0.483-0.483 1.265 0 1.743 0.241 0.246 0.565 0.367 0.883 0.367 0.304 0 0.608-0.111 0.826-0.338l1.487-1.241c1.584-0.227 3.071-0.97 4.205-2.1l8.034-8.039 0.072 0.072c0.299 0.299 0.69 0.449 1.086 0.449 0.401 0 0.811-0.159 1.13-0.478 0.29-0.29 0.449-0.676 0.449-1.091s-0.159-0.801-0.449-1.096l-0.072-0.068 2.515-2.515c1.106-1.11 1.106-2.916-0.005-4.027zM13.568 18.997c-1.014 1.014-2.356 1.671-3.78 1.844-0.092 0.014-0.179 0.048-0.251 0.111l-1.622 1.361c-0.106 0.106-0.275 0.106-0.381 0-0.101-0.106-0.101-0.275 0.029-0.41l1.337-1.593c0.058-0.072 0.097-0.159 0.106-0.251 0.174-1.424 0.83-2.766 1.844-3.78l8.039-8.034 2.718 2.718-8.039 8.034z"
+          ></path>
           <path
-            d="M5.804 24.979c-0.275 0.328-1.651 2.023-1.651 2.998 0 1.115 0.908 2.023 2.018 2.023 1.115 0 2.023-0.908 2.023-2.023 0-0.975-1.376-2.67-1.651-2.998-0.183-0.222-0.555-0.222-0.739 0z">
-          </path>
+            d="M5.804 24.979c-0.275 0.328-1.651 2.023-1.651 2.998 0 1.115 0.908 2.023 2.018 2.023 1.115 0 2.023-0.908 2.023-2.023 0-0.975-1.376-2.67-1.651-2.998-0.183-0.222-0.555-0.222-0.739 0z"
+          ></path>
         </svg>
       </button>
 
-      <div style="
+      <div
+        style="
           flex-grow: 1;
           display: flex;
           flex-direction: column;
           gap: calc(var(--margin-top) * 1.85);
-        ">
-        <PickerHue v-model="hue" :showEyeDrop="showEyeDrop" :isEyeDropperUsing="isEyeDropperUsing"
-          @onInput="setHue(false)" @onChange="handleHueChange" @onClickEyeDropper="handleOnClickEyeDropper" />
+        "
+      >
+        <PickerHue
+          v-model="hue"
+          :showEyeDrop="showEyeDrop"
+          :isEyeDropperUsing="isEyeDropperUsing"
+          @onInput="setHue(false)"
+          @onChange="handleHueChange"
+          @onClickEyeDropper="handleOnClickEyeDropper"
+        />
 
         <OpacityBar v-if="showAlpha" v-model="opacity" @onInput="setOpacity" />
       </div>
@@ -71,58 +129,155 @@
     <div v-show="false" id="ck-cp-target-background"></div>
 
     <div v-if="isReady && showInputSet" class="ck-cp-input-container">
-      <InputHex v-if="inputType !== 'CMYK'" v-model="hexVal" @update:model-value="applyHex" />
+      <InputHex
+        v-if="inputType !== 'CMYK'"
+        v-model="hexVal"
+        @update:model-value="applyHex"
+      />
 
-      <InputNumber v-if="inputType == 'RGB'" label="R" :min="0" :max="255"
+      <InputNumber
+        v-if="inputType == 'RGB'"
+        label="R"
+        :min="0"
+        :max="255"
         v-model="colorList.find((item) => item.select == true)!.r"
-        @update:model-value="(value) => handleRGBAInput(value, 'r')" />
-      <InputNumber v-if="inputType == 'RGB'" label="G" :min="0" :max="255"
+        @update:model-value="(value) => handleRGBAInput(value, 'r')"
+      />
+      <InputNumber
+        v-if="inputType == 'RGB'"
+        label="G"
+        :min="0"
+        :max="255"
         v-model="colorList.find((item) => item.select == true)!.g"
-        @update:model-value="(value) => handleRGBAInput(value, 'g')" />
-      <InputNumber v-if="inputType == 'RGB'" label="B" :min="0" :max="255"
+        @update:model-value="(value) => handleRGBAInput(value, 'g')"
+      />
+      <InputNumber
+        v-if="inputType == 'RGB'"
+        label="B"
+        :min="0"
+        :max="255"
         v-model="colorList.find((item) => item.select == true)!.b"
-        @update:model-value="(value) => handleRGBAInput(value, 'b')" />
+        @update:model-value="(value) => handleRGBAInput(value, 'b')"
+      />
 
-      <InputNumber v-if="inputType == 'HSL'" label="H" :min="0" :max="360" v-model="HSL.h"
-        @update:model-value="handleHSLInput" />
-      <InputNumber v-if="inputType == 'HSL'" label="S" :min="0" :max="100" v-model="HSL.s"
-        @update:model-value="handleHSLInput" />
-      <InputNumber v-if="inputType == 'HSL'" label="L" :min="0" :max="100" v-model="HSL.l"
-        @update:model-value="handleHSLInput" />
+      <InputNumber
+        v-if="inputType == 'HSL'"
+        label="H"
+        :min="0"
+        :max="360"
+        v-model="HSL.h"
+        @update:model-value="handleHSLInput"
+      />
+      <InputNumber
+        v-if="inputType == 'HSL'"
+        label="S"
+        :min="0"
+        :max="100"
+        v-model="HSL.s"
+        @update:model-value="handleHSLInput"
+      />
+      <InputNumber
+        v-if="inputType == 'HSL'"
+        label="L"
+        :min="0"
+        :max="100"
+        v-model="HSL.l"
+        @update:model-value="handleHSLInput"
+      />
 
-      <InputNumber v-if="inputType == 'HSV'" label="H" :min="0" :max="360" v-model="HSV.h"
-        @update:model-value="handleHSVInput" />
-      <InputNumber v-if="inputType == 'HSV'" label="S" :min="0" :max="100" v-model="HSV.s"
-        @update:model-value="handleHSVInput" />
-      <InputNumber v-if="inputType == 'HSV'" label="V" :min="0" :max="100" v-model="HSV.v"
-        @update:model-value="handleHSVInput" />
+      <InputNumber
+        v-if="inputType == 'HSV'"
+        label="H"
+        :min="0"
+        :max="360"
+        v-model="HSV.h"
+        @update:model-value="handleHSVInput"
+      />
+      <InputNumber
+        v-if="inputType == 'HSV'"
+        label="S"
+        :min="0"
+        :max="100"
+        v-model="HSV.s"
+        @update:model-value="handleHSVInput"
+      />
+      <InputNumber
+        v-if="inputType == 'HSV'"
+        label="V"
+        :min="0"
+        :max="100"
+        v-model="HSV.v"
+        @update:model-value="handleHSVInput"
+      />
 
-      <InputNumber v-if="inputType == 'CMYK'" label="C" :min="0" :max="100" v-model="CMYK.c"
-        @update:model-value="handleCMYKInput" />
-      <InputNumber v-if="inputType == 'CMYK'" label="M" :min="0" :max="100" v-model="CMYK.m"
-        @update:model-value="handleCMYKInput" />
-      <InputNumber v-if="inputType == 'CMYK'" label="Y" :min="0" :max="100" v-model="CMYK.y"
-        @update:model-value="handleCMYKInput" />
-      <InputNumber v-if="inputType == 'CMYK'" label="K" :min="0" :max="100" v-model="CMYK.k"
-        @update:model-value="handleCMYKInput" />
+      <InputNumber
+        v-if="inputType == 'CMYK'"
+        label="C"
+        :min="0"
+        :max="100"
+        v-model="CMYK.c"
+        @update:model-value="handleCMYKInput"
+      />
+      <InputNumber
+        v-if="inputType == 'CMYK'"
+        label="M"
+        :min="0"
+        :max="100"
+        v-model="CMYK.m"
+        @update:model-value="handleCMYKInput"
+      />
+      <InputNumber
+        v-if="inputType == 'CMYK'"
+        label="Y"
+        :min="0"
+        :max="100"
+        v-model="CMYK.y"
+        @update:model-value="handleCMYKInput"
+      />
+      <InputNumber
+        v-if="inputType == 'CMYK'"
+        label="K"
+        :min="0"
+        :max="100"
+        v-model="CMYK.k"
+        @update:model-value="handleCMYKInput"
+      />
 
-      <InputNumber v-if="showAlpha" label="A" :min="0" :max="100" style="margin-right: 2px"
+      <InputNumber
+        v-if="showAlpha"
+        label="A"
+        :min="0"
+        :max="100"
+        style="margin-right: 2px"
         v-model="colorList.find((item) => item.select == true)!.a"
-        @update:model-value="(value) => handleRGBAInput(value, 'a')" />
+        @update:model-value="(value) => handleRGBAInput(value, 'a')"
+      />
     </div>
 
-
-    <HistoryColorList v-if="showColorList" :color-list-count="colorListCount" :hex-val="hexVal"
-      @color-item-click="handleColorItemOnClick" :iconClasses="iconClasses" :title="local.colorPalette" />
+    <HistoryColorList
+      v-if="showColorList"
+      :color-list-count="colorListCount"
+      :hex-val="hexVal"
+      @color-item-click="handleColorItemOnClick"
+      :iconClasses="iconClasses"
+      :title="local.colorPalette"
+    />
     <div v-if="showButtons" class="ck-cp-buttons">
-      <button class="ck-cp-buttons__button ck-cp-buttons__button--save" type="button" @click="handleSave">
+      <button
+        class="ck-cp-buttons__button ck-cp-buttons__button--save"
+        type="button"
+        @click="handleSave"
+      >
         {{ local.btnSaveLabel }}
       </button>
-      <button class="ck-cp-buttons__button ck-cp-buttons__button--cancel" type="button" @click="handleCancel">
+      <button
+        class="ck-cp-buttons__button ck-cp-buttons__button--cancel"
+        type="button"
+        @click="handleCancel"
+      >
         {{ local.btnCancelLabel }}
       </button>
     </div>
-
   </div>
 </template>
 
@@ -164,7 +319,7 @@ import {
   Local,
   IconClasses,
   GradientMode,
-  ModelValue
+  ModelValue,
 } from "../core/types/types.ts";
 import HistoryColorList from "./HistoryColorList.vue";
 
@@ -215,9 +370,8 @@ const props = defineProps({
   },
   showButtons: {
     type: Boolean,
-    default: false
+    default: false,
   },
-
 });
 
 const pickerTemplateRef = ref<HTMLElement | null>(null);
@@ -291,17 +445,19 @@ let offsetY = 0;
 let BottomPoint = 0;
 let RightPoint = 0;
 
-const handlePickerStartOnMouseDown = (event: MouseEvent) => {
+const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
   if (!pickerWrap.value || !pickerPointer.value) return;
+
+  const { clientX, clientY } =
+    event instanceof MouseEvent ? event : event.touches[0];
 
   BottomPoint =
     pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
   RightPoint = pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
 
   offsetX =
-    event.clientX - (event.target as HTMLElement).getBoundingClientRect().left;
-  offsetY =
-    event.clientY - (event.target as HTMLElement).getBoundingClientRect().top;
+    clientX - (event.target as HTMLElement).getBoundingClientRect().left;
+  offsetY = clientY - (event.target as HTMLElement).getBoundingClientRect().top;
 
   divX = offsetX - pickerPointer.value.offsetWidth / 2;
   divY = offsetY - pickerPointer.value.offsetHeight / 2;
@@ -314,16 +470,21 @@ const handlePickerStartOnMouseDown = (event: MouseEvent) => {
 
   window.addEventListener("mousemove", handlePickerOnMouseMove);
   window.addEventListener("mouseup", handlePickerOnMouseUp);
+
+  window.addEventListener("touchmove", handlePickerOnTouchMove);
+  window.addEventListener("touchend", handlePickerOnTouchEnd);
 };
 
-const handlePickerOnMouseMove = (event: MouseEvent) => {
+const handlePickerOnMouseMove = (event: MouseEvent | TouchEvent) => {
   event.preventDefault();
+
+  const { clientX, clientY } =
+    event instanceof MouseEvent ? event : event.touches[0];
+
   const client = pickerWrap.value.getBoundingClientRect();
 
-  const newX =
-    event.clientX - client.left - pickerPointer.value.offsetWidth / 2;
-  const newY =
-    event.clientY - client.top - pickerPointer.value.offsetHeight / 2;
+  const newX = clientX - client.left - pickerPointer.value.offsetWidth / 2;
+  const newY = clientY - client.top - pickerPointer.value.offsetHeight / 2;
 
   if (newX >= 0 && newX <= RightPoint) {
     divX = newX;
@@ -353,6 +514,69 @@ const handlePickerOnMouseMove = (event: MouseEvent) => {
 const handlePickerOnMouseUp = () => {
   window.removeEventListener("mousemove", handlePickerOnMouseMove);
   window.removeEventListener("mouseup", handlePickerOnMouseUp);
+
+  window.removeEventListener("touchmove", handlePickerOnTouchMove);
+  window.removeEventListener("touchend", handlePickerOnTouchEnd);
+};
+
+const handlePickerStartOnTouchStart = (event: TouchEvent) => {
+  if (!pickerWrap.value || !pickerPointer.value) return;
+
+  BottomPoint =
+    pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
+  RightPoint = pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
+
+  const touch = event.touches[0];
+  offsetX =
+    touch.clientX - (touch.target as HTMLElement).getBoundingClientRect().left;
+  offsetY =
+    touch.clientY - (touch.target as HTMLElement).getBoundingClientRect().top;
+
+  divX = offsetX - pickerPointer.value.offsetWidth / 2;
+  divY = offsetY - pickerPointer.value.offsetHeight / 2;
+
+  pickerPointer.value.style.left = `${divX}px`;
+  pickerPointer.value.style.top = `${divY}px`;
+
+  updatePickerPosition(false);
+  onChangeSetToHexValue();
+
+  window.addEventListener("touchmove", handlePickerOnTouchMove);
+  window.addEventListener("touchend", handlePickerOnTouchEnd);
+};
+
+const handlePickerOnTouchMove = (event: TouchEvent) => {
+  event.preventDefault();
+  const client = pickerWrap.value.getBoundingClientRect();
+  const touch = event.touches[0];
+
+  const newX =
+    touch.clientX - client.left - pickerPointer.value.offsetWidth / 2;
+  const newY =
+    touch.clientY - client.top - pickerPointer.value.offsetHeight / 2;
+
+  if (newX >= 0 && newX <= RightPoint) {
+    divX = newX;
+    pickerPointer.value.style.left = `${newX}px`;
+  } else if (0 > newX) {
+    divX = 0;
+    pickerPointer.value.style.left = `${0}px`;
+  }
+  if (newY >= 0 && newY <= BottomPoint) {
+    divY = newY;
+    pickerPointer.value.style.top = `${newY}px`;
+  } else if (0 > newY) {
+    divY = 0;
+    pickerPointer.value.style.top = `${0}px`;
+  }
+
+  updatePickerPosition(false);
+  onChangeSetToHexValue();
+};
+
+const handlePickerOnTouchEnd = () => {
+  window.removeEventListener("touchmove", handlePickerOnTouchMove);
+  window.removeEventListener("touchend", handlePickerOnTouchEnd);
 };
 
 const updatePickerPosition = (isNotUpdate: boolean) => {
@@ -434,14 +658,14 @@ const findColorCoordinates = () => {
     const [posx_inv, posy_inv] =
       2 * lightness - 1 < 0
         ? [
-          (rightLine * 2 * saturation) / (1 + saturation),
-          bottomLine * (1 - lightness * (1 + saturation)),
-        ]
+            (rightLine * 2 * saturation) / (1 + saturation),
+            bottomLine * (1 - lightness * (1 + saturation)),
+          ]
         : [
-          (-rightLine * 2 * (lightness - 1) * saturation) /
-          (lightness + saturation - lightness * saturation),
-          bottomLine * (lightness - 1) * (saturation - 1),
-        ];
+            (-rightLine * 2 * (lightness - 1) * saturation) /
+              (lightness + saturation - lightness * saturation),
+            bottomLine * (lightness - 1) * (saturation - 1),
+          ];
 
     coordinates.x = posx_inv;
     coordinates.y = posy_inv;
@@ -839,7 +1063,7 @@ const firstSetHue = () => {
 
 // Menu Func
 const setBackgroundType = (event: string) => {
-  gradientType.value = (event as GradientMode);
+  gradientType.value = event as GradientMode;
 
   setGradientBarColor();
 };
@@ -1089,9 +1313,12 @@ if (window.EyeDropper) {
 }
 
 const parseVModelString = (value = "") => {
-
   if (PickerMode.value == "gradient") {
-    let type = value ? value.includes('linear-gradient') ? 'linear' : 'radial' : props.gradientMode;
+    let type = value
+      ? value.includes("linear-gradient")
+        ? "linear"
+        : "radial"
+      : props.gradientMode;
     let newColorList = [];
 
     gradientType.value = type as GradientMode;
@@ -1100,8 +1327,7 @@ const parseVModelString = (value = "") => {
       let matches = value.replace(";", "").trim().match(regexPattern);
       let parsValueRGX = /,\s*(?![^()]*\))/;
 
-      if (!value.includes('deg'))
-        gradientAngle.angle = 180
+      if (!value.includes("deg")) gradientAngle.angle = 180;
 
       if (matches) {
         let valueList = matches[1].split(parsValueRGX);
@@ -1329,7 +1555,6 @@ const handleChangeInputType = (event: InputType) => {
 };
 
 const handleChangePickerMode = (event: Mode) => {
-
   PickerMode.value = event;
 
   setTimeout(() => {
@@ -1345,7 +1570,6 @@ const handleChangePickerMode = (event: Mode) => {
 };
 
 const applyValue = (value: string) => {
-
   if (!value) {
     setFirstEmptyValue();
   } else {
@@ -1361,12 +1585,10 @@ const handleSave = () => {
 
 const clearGradient = () => {
   colorList.value.forEach((item: Record<string, any>) => {
-    const deleteElement = gradientMouseBar?.querySelector(
-      `#clr-gb-${item.id}`
-    );
+    const deleteElement = gradientMouseBar?.querySelector(`#clr-gb-${item.id}`);
     deleteElement?.remove();
   });
-}
+};
 
 const handleCancel = () => {
   localValue.value = emittedValue.value;
@@ -1546,14 +1768,16 @@ onMounted(() => {
   display: block;
   outline: none;
   transition: color 0.05s linear;
-  background: linear-gradient(to right,
-      #ff0000 0%,
-      #ffff00 17%,
-      #00ff00 33%,
-      #00ffff 50%,
-      #0000ff 67%,
-      #ff00ff 83%,
-      #ff0000 100%);
+  background: linear-gradient(
+    to right,
+    #ff0000 0%,
+    #ffff00 17%,
+    #00ff00 33%,
+    #00ffff 50%,
+    #0000ff 67%,
+    #ff00ff 83%,
+    #ff0000 100%
+  );
 
   &:focus {
     outline: none;
@@ -1727,18 +1951,24 @@ onMounted(() => {
   border-radius: 16px;
   display: flex;
   align-items: center;
-  background: linear-gradient(45deg,
-      var(--cp-inverse-dark) 25%,
-      transparent 25%,
-      transparent 75%,
-      var(--cp-inverse-dark) 75%,
-      var(--cp-inverse-dark) 0px) 0px 0px / 16px 16px repeat padding-box border-box,
-    linear-gradient(45deg,
-      var(--cp-inverse-dark) 25%,
-      transparent 25%,
-      transparent 75%,
-      var(--cp-inverse-dark) 75%,
-      var(--cp-inverse-dark) 0px) 8px 8px / 16px 16px repeat padding-box border-box,
+  background: linear-gradient(
+        45deg,
+        var(--cp-inverse-dark) 25%,
+        transparent 25%,
+        transparent 75%,
+        var(--cp-inverse-dark) 75%,
+        var(--cp-inverse-dark) 0px
+      )
+      0px 0px / 16px 16px repeat padding-box border-box,
+    linear-gradient(
+        45deg,
+        var(--cp-inverse-dark) 25%,
+        transparent 25%,
+        transparent 75%,
+        var(--cp-inverse-dark) 75%,
+        var(--cp-inverse-dark) 0px
+      )
+      8px 8px / 16px 16px repeat padding-box border-box,
     var(--cp-inverse-white);
 }
 
