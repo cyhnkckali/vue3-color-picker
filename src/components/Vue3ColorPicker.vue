@@ -449,11 +449,7 @@ const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
   if (!pickerWrap.value || !pickerPointer.value) return;
 
   const isTouchEvent = event instanceof TouchEvent;
-
-  console.log("isTouchEvent", isTouchEvent);
-
-  const { clientX, clientY } =
-    event instanceof MouseEvent ? event : event.touches[0];
+  const { clientX, clientY } = isTouchEvent ? event.touches[0] : event;
 
   BottomPoint =
     pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
@@ -472,18 +468,20 @@ const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
   updatePickerPosition(false);
   onChangeSetToHexValue();
 
-  window.addEventListener("mousemove", handlePickerOnMouseMove);
-  window.addEventListener("mouseup", handlePickerOnMouseUp);
-
-  window.addEventListener("touchmove", handlePickerOnMouseMove);
-  window.addEventListener("touchend", handlePickerOnMouseUp);
+  if (isTouchEvent) {
+    window.addEventListener("touchmove", handlePickerOnMouseMove);
+    window.addEventListener("touchend", handlePickerOnMouseUp);
+  } else {
+    window.addEventListener("mousemove", handlePickerOnMouseMove);
+    window.addEventListener("mouseup", handlePickerOnMouseUp);
+  }
 };
 
 const handlePickerOnMouseMove = (event: MouseEvent | TouchEvent) => {
   event.preventDefault();
 
-  const { clientX, clientY } =
-    event instanceof MouseEvent ? event : event.touches[0];
+  const isTouchEvent = event instanceof TouchEvent;
+  const { clientX, clientY } = isTouchEvent ? event.touches[0] : event;
 
   const client = pickerWrap.value.getBoundingClientRect();
 
@@ -515,12 +513,16 @@ const handlePickerOnMouseMove = (event: MouseEvent | TouchEvent) => {
   onChangeSetToHexValue();
 };
 
-const handlePickerOnMouseUp = () => {
-  window.removeEventListener("mousemove", handlePickerOnMouseMove);
-  window.removeEventListener("mouseup", handlePickerOnMouseUp);
+const handlePickerOnMouseUp = (event) => {
+  const isTouchEvent = event instanceof TouchEvent;
 
-  window.removeEventListener("touchmove", handlePickerOnMouseMove);
-  window.removeEventListener("touchend", handlePickerOnMouseUp);
+  if (isTouchEvent) {
+    window.removeEventListener("touchmove", handlePickerOnMouseMove);
+    window.removeEventListener("touchend", handlePickerOnMouseUp);
+  } else {
+    window.removeEventListener("mousemove", handlePickerOnMouseMove);
+    window.removeEventListener("mouseup", handlePickerOnMouseUp);
+  }
 };
 
 const updatePickerPosition = (isNotUpdate: boolean) => {
