@@ -93,6 +93,15 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 | `showButtons` | `boolean` | default `true` |
 
 
+## Emits
+
+| Parameter | Type     | Description                |
+| :-------- | :------- | :------------------------- |
+| `update:model-value` | `event` | return `'color value'`|
+| `onSave` | `event` | return `'color value'`|
+| `onCancel` | `event` | return `'color value'`|
+
+
 ## CSS Colour Variables
 
 

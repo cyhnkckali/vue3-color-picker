@@ -1,14 +1,7 @@
 <template>
   <div class="opacity-bar">
-    <input
-      ref="opacitySlider"
-      :value="modelValue"
-      class="opacity_slider"
-      type="range"
-      min="0"
-      max="100"
-      @input="handleInput"
-    />
+    <input ref="opacitySlider" :value="modelValue" class="opacity_slider" type="range" min="0" max="100"
+      @input="handleInput" />
   </div>
 </template>
 

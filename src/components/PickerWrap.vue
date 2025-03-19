@@ -1,14 +1,8 @@
 <template>
-  <div
-    ref="pickerWrap"
-    class="cp-picker-wrap"
-    @mousedown="$emit('onEventStart', $event)"
-    @touchstart="
-      $event.preventDefault();
-      $emit('onEventStart', $event);
-    "
-    @dragstart="handleItemDragStart"
-  >
+  <div ref="pickerWrap" class="cp-picker-wrap" @mousedown="$emit('onEventStart', $event)" @touchstart="
+    $event.preventDefault();
+  $emit('onEventStart', $event);
+  " @dragstart="handleItemDragStart">
     <canvas ref="canvas" class="colour-area"> </canvas>
     <div class="colour-area-mask"></div>
     <div ref="pickerPointer" class="colour-area-point-circle"></div>
@@ -19,7 +13,7 @@
 import { inject, Ref } from "vue";
 
 defineEmits<{
-  (e: "onEventStart", value: MouseEvent): void;
+  (e: "onEventStart", value: TouchEvent | MouseEvent): void;
 }>();
 
 const canvas = inject<Ref>("canvas");

@@ -1,13 +1,7 @@
 <template>
     <div class="ck-cp-input-content color-hex">
         <span class="ck-cp-input-label">HEX</span>
-        <input
-            type="text"
-            :value="internal"
-            @input="handleInput"
-            @keydown="handleKeydown"
-            @focusout="handleFocusout"
-        />
+        <input type="text" :value="internal" @input="handleInput" @keydown="handleKeydown" @focusout="handleFocusout" />
     </div>
 </template>
 
@@ -43,22 +37,22 @@ const emitModelValue = (event: Event) => {
     let newValue: string = value.replace(/#/g, "");
 
     switch (newValue.length) {
-      case 0:
-        newValue = props.modelValue.replace('#', '');
-        break;
-      case 1:
-      case 2:
-        newValue = newValue.repeat(3);
-        break;
-      case 4:
-      case 5:
-        newValue = newValue.slice(0, 3);
-        break;
-      case 3:
-      case 6:
-        break;
-      default:
-        newValue = newValue.slice(0, 6);
+        case 0:
+            newValue = props.modelValue.replace('#', '');
+            break;
+        case 1:
+        case 2:
+            newValue = newValue.repeat(3);
+            break;
+        case 4:
+        case 5:
+            newValue = newValue.slice(0, 3);
+            break;
+        case 3:
+        case 6:
+            break;
+        default:
+            newValue = newValue.slice(0, 6);
     }
 
     internal.value = `#${newValue.toUpperCase()}`;

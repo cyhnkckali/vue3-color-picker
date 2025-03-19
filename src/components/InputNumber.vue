@@ -1,15 +1,8 @@
 <template>
     <div class="ck-cp-input-content">
         <span class="ck-cp-input-label">{{ label }}</span>
-        <input
-            type="number"
-            :min="min"
-            :max="max"
-            :value="internal"
-            @input="handleInput"
-            @keydown="handleKeydown"
-            @focusout="handleFocusOut"
-        />
+        <input type="number" :min="min" :max="max" :value="internal" @input="handleInput" @keydown="handleKeydown"
+            @focusout="handleFocusOut" />
     </div>
 </template>
 
@@ -40,7 +33,7 @@ const emitUpdateModelValue = (event: Event) => {
     };
 
     const value = (event.target as HTMLInputElement).value;
-        
+
     if (!value) return updateModelAndEmitUpdateModelValue(props.modelValue);
     if (parseInt(value) > props.max) return updateModelAndEmitUpdateModelValue(props.max);
     emits('update:modelValue', parseInt(value));
