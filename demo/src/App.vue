@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1 class="d-flex w-100 align-items-center justify-content-between"><label class="me-10">Vue 3 Color Picker <span
-          class="ms-4" style="font-size: 12px; color: #ddd;">v 2.0.8</span></label>
+          class="ms-4" style="font-size: 12px; color: #ddd;">v 2.1.1</span></label>
 
 
       <div class="d-flex gap-2">
