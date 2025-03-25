@@ -293,8 +293,9 @@ let RightPoint = 0;
 const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
   if (!pickerWrap.value || !pickerPointer.value) return;
 
-  const isTouchEvent = event instanceof TouchEvent;
-  const { clientX, clientY } = isTouchEvent ? event.touches[0] : event;
+  const isTouchEvent = "TouchEvent" in window && event instanceof TouchEvent;
+
+  const { clientX, clientY } = isTouchEvent ? (event as TouchEvent).touches[0] : (event as MouseEvent);
 
   BottomPoint =
     pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
@@ -325,8 +326,8 @@ const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
 const handlePickerOnMouseMove = (event: MouseEvent | TouchEvent) => {
   event.preventDefault();
 
-  const isTouchEvent = event instanceof TouchEvent;
-  const { clientX, clientY } = isTouchEvent ? event.touches[0] : event;
+  const isTouchEvent = "TouchEvent" in window && event instanceof TouchEvent;
+  const { clientX, clientY } = isTouchEvent ? (event as TouchEvent).touches[0] : (event as MouseEvent);
 
   const client = pickerWrap.value.getBoundingClientRect();
 
@@ -359,7 +360,7 @@ const handlePickerOnMouseMove = (event: MouseEvent | TouchEvent) => {
 };
 
 const handlePickerOnMouseUp = (event: TouchEvent | MouseEvent) => {
-  const isTouchEvent = event instanceof TouchEvent;
+  const isTouchEvent = "TouchEvent" in window && event instanceof TouchEvent;
 
   if (isTouchEvent) {
     window.removeEventListener("touchmove", handlePickerOnMouseMove);
@@ -543,7 +544,7 @@ const handleGradientItemOnMouseDown = (event: MouseEvent | TouchEvent) => {
       }
     }
 
-    const isTouchEvent = event instanceof TouchEvent;
+    const isTouchEvent = "TouchEvent" in window && event instanceof TouchEvent;
 
     if (isTouchEvent) {
       window.addEventListener("touchmove", handleGradientMouseMove);
@@ -556,7 +557,7 @@ const handleGradientItemOnMouseDown = (event: MouseEvent | TouchEvent) => {
 };
 
 const handleGradientItemOnMouseUp = (event: TouchEvent | MouseEvent) => {
-  const isTouchEvent = event instanceof TouchEvent;
+  const isTouchEvent = "TouchEvent" in window && event instanceof TouchEvent;
   if (isTouchEvent) {
     window.removeEventListener("touchmove", handleGradientMouseMove);
     window.removeEventListener("touchend", handleGradientItemOnMouseUp);
@@ -569,8 +570,8 @@ const handleGradientItemOnMouseUp = (event: TouchEvent | MouseEvent) => {
 
 const handleGradientMouseMove = (e: MouseEvent | TouchEvent) => {
   e.preventDefault();
-  const isTouchEvent = e instanceof TouchEvent;
-  const clientX = isTouchEvent ? e.touches[0].clientX : e.clientX
+  const isTouchEvent = "TouchEvent" in window && e instanceof TouchEvent;
+  const clientX = isTouchEvent ? e.touches[0].clientX : (e as MouseEvent).clientX
 
   const handleClient = pickerTemplateRef.value
     ?.querySelector(".gradient-handle-content")
@@ -606,14 +607,14 @@ const handleGradientMouseMove = (e: MouseEvent | TouchEvent) => {
 
 const addColor = (e: MouseEvent | TouchEvent) => {
 
-  const isTouchEvent = e instanceof TouchEvent;
+  const isTouchEvent = "TouchEvent" in window && e instanceof TouchEvent;
 
   const client = gradientMouseBar?.getBoundingClientRect();
   let percent: number
 
   if (!isTouchEvent) {
     percent = Math.round(
-      ((e.clientX - (client?.left || 0)) / (client?.width || 1)) * 100
+      (((e as MouseEvent).clientX - (client?.left || 0)) / (client?.width || 1)) * 100
     );
   } else {
 
