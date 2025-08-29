@@ -1135,6 +1135,9 @@ if (window.EyeDropper) {
 }
 
 const parseVModelString = (value = "") => {
+
+
+
   if (PickerMode.value == "gradient") {
     let type = value
       ? value.includes("linear-gradient")
@@ -1430,12 +1433,25 @@ watch(
   }
 );
 
+const validateModeByValue = (value?: string | null) => {
+  if (value) {
+    if (value.includes("linear-gradient") || value.includes("radial-gradient")) {
+      PickerMode.value = "gradient";
+    } else {
+      PickerMode.value = "solid";
+    }
+  }
+};
+
 onMounted(() => {
   if (PickerMode.value == "gradient") {
     gradientMouseBar = pickerTemplateRef.value?.querySelector(
       ".gradient-bar"
     ) as HTMLElement;
   }
+
+  validateModeByValue(props.modelValue);
+
   applyValue(props.modelValue as string);
   handleChangeInputType(inputType.value);
   isReady.value = true;
