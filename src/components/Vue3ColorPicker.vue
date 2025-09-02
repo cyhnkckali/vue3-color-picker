@@ -114,12 +114,14 @@
     <HistoryColorList v-if="showColorList" :color-list-count="colorListCount" :hex-val="hexVal"
       @color-item-click="handleColorItemOnClick" :iconClasses="iconClasses" :title="local.colorPalette" />
     <div v-if="showButtons" class="ck-cp-buttons">
-      <button class="ck-cp-buttons__button ck-cp-buttons__button--save" type="button" @click="handleSave">
-        {{ local.btnSaveLabel }}
-      </button>
-      <button class="ck-cp-buttons__button ck-cp-buttons__button--cancel" type="button" @click="handleCancel">
-        {{ local.btnCancelLabel }}
-      </button>
+      <slot name="buttons" :save="handleSave" :cancel="handleCancel">
+        <button class="ck-cp-buttons__button ck-cp-buttons__button--save" type="button" @click="handleSave">
+          {{ local.btnSaveLabel }}
+        </button>
+        <button class="ck-cp-buttons__button ck-cp-buttons__button--cancel" type="button" @click="handleCancel">
+          {{ local.btnCancelLabel }}
+        </button>
+      </slot>
     </div>
   </div>
 </template>
@@ -221,6 +223,7 @@ const pickerTemplateRef = ref<HTMLElement | null>(null);
 
 const emits = defineEmits<{
   (e: "update:modelValue", value: string): void;
+  (e: "onChange", value: string): void;
   (e: "onSave", value: string): void;
   (e: "onCancel", value: string): void;
 }>();
@@ -232,6 +235,7 @@ const emittedValue = ref(props.modelValue);
 
 const emitUpdateModelValue = (value: string) => {
   localValue.value = value;
+  emits("onChange", value);
   if (!props.showButtons) {
     emittedValue.value = value;
     emits("update:modelValue", value);
