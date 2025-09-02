@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, provide, watch } from "vue";
+import { onMounted, ref, reactive, provide, watch, nextTick } from "vue";
 
 import PickerMenu from "./PickerMenu.vue";
 import GradientBar from "./GradientBar.vue";
@@ -1447,18 +1447,18 @@ const validateModeByValue = (value?: string | null) => {
   }
 };
 
+validateModeByValue(props.modelValue);
 onMounted(() => {
-  if (PickerMode.value == "gradient") {
-    gradientMouseBar = pickerTemplateRef.value?.querySelector(
-      ".gradient-bar"
-    ) as HTMLElement;
-  }
-
-  validateModeByValue(props.modelValue);
-
-  applyValue(props.modelValue as string);
-  handleChangeInputType(inputType.value);
-  isReady.value = true;
+  nextTick(() => {
+    if (PickerMode.value == "gradient") {
+      gradientMouseBar = pickerTemplateRef.value?.querySelector(
+        ".gradient-bar"
+      ) as HTMLElement;
+    }
+    applyValue(props.modelValue as string);
+    handleChangeInputType(inputType.value);
+    isReady.value = true;
+  })
 });
 </script>
 
