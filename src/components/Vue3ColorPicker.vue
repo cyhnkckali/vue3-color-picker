@@ -127,7 +127,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, provide, watch, nextTick } from "vue";
+import { onMounted, onBeforeUnmount, ref, reactive, provide, watch, nextTick } from "vue";
 
 import PickerMenu from "./PickerMenu.vue";
 import GradientBar from "./GradientBar.vue";
@@ -293,6 +293,9 @@ let offsetX = 0;
 let offsetY = 0;
 let BottomPoint = 0;
 let RightPoint = 0;
+let pointerUpdateFrame: number | null = null;
+let pointerResizeObserver: ResizeObserver | null = null;
+let pointerRetryCount = 0;
 
 const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
   if (!pickerWrap.value || !pickerPointer.value) return;
@@ -433,42 +436,95 @@ const calculateSL = () => {
   return obj;
 };
 
-const findColorCoordinates = () => {
+const findColorCoordinates = (
+  bounds?: { rightLine: number; bottomLine: number }
+) => {
   const targetColor = colorList.value.find((item) => item.select == true);
-
-  if (targetColor) {
-    const { l, s } = rgbToHsl(targetColor.r, targetColor.g, targetColor.b);
-    let lightness = l;
-    let saturation = s;
-
-    if (Number.isNaN(saturation)) {
-      saturation = lightness;
-    }
-
-    let coordinates = { x: 0, y: 0 };
-    let rightLine =
-      pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
-    let bottomLine =
-      pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
-
-    const [posx_inv, posy_inv] =
-      2 * lightness - 1 < 0
-        ? [
-          (rightLine * 2 * saturation) / (1 + saturation),
-          bottomLine * (1 - lightness * (1 + saturation)),
-        ]
-        : [
-          (-rightLine * 2 * (lightness - 1) * saturation) /
-          (lightness + saturation - lightness * saturation),
-          bottomLine * (lightness - 1) * (saturation - 1),
-        ];
-
-    coordinates.x = posx_inv;
-    coordinates.y = posy_inv;
-    return coordinates;
-  } else {
+  if (
+    !targetColor ||
+    !pickerWrap.value ||
+    !pickerPointer.value
+  ) {
     return null;
   }
+
+  const { l, s } = rgbToHsl(targetColor.r, targetColor.g, targetColor.b);
+  let lightness = l;
+  let saturation = s;
+
+  if (Number.isNaN(saturation)) {
+    saturation = lightness;
+  }
+
+  const rightLine =
+    bounds?.rightLine ??
+    pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
+  const bottomLine =
+    bounds?.bottomLine ??
+    pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
+
+  if (rightLine <= 0 || bottomLine <= 0) {
+    return null;
+  }
+
+  const [posx_inv, posy_inv] =
+    2 * lightness - 1 < 0
+      ? [
+        (rightLine * 2 * saturation) / (1 + saturation),
+        bottomLine * (1 - lightness * (1 + saturation)),
+      ]
+      : [
+        (-rightLine * 2 * (lightness - 1) * saturation) /
+        (lightness + saturation - lightness * saturation),
+        bottomLine * (lightness - 1) * (saturation - 1),
+      ];
+
+  return { x: posx_inv, y: posy_inv };
+};
+
+const updatePointerFromModelValue = () => {
+  if (!pickerWrap.value || !pickerPointer.value) {
+    return;
+  }
+
+  const rightLine =
+    pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
+  const bottomLine =
+    pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
+
+  if (rightLine <= 0 || bottomLine <= 0) {
+    if (pointerRetryCount < 5 && pointerUpdateFrame === null) {
+      pointerRetryCount += 1;
+      pointerUpdateFrame = requestAnimationFrame(() => {
+        pointerUpdateFrame = null;
+        updatePointerFromModelValue();
+      });
+    }
+    return;
+  }
+
+  pointerRetryCount = 0;
+
+  if (pointerUpdateFrame !== null) {
+    cancelAnimationFrame(pointerUpdateFrame);
+    pointerUpdateFrame = null;
+  }
+
+  const coordinates = findColorCoordinates({ rightLine, bottomLine });
+  if (!coordinates) {
+    return;
+  }
+
+  const clampedX = Math.min(Math.max(coordinates.x, 0), rightLine);
+  const clampedY = Math.min(Math.max(coordinates.y, 0), bottomLine);
+
+  pickerPointer.value.style.left = `${clampedX}px`;
+  pickerPointer.value.style.top = `${clampedY}px`;
+
+  divX = clampedX;
+  divY = clampedY;
+  RightPoint = rightLine;
+  BottomPoint = bottomLine;
 };
 
 const handleHueChange = () => {
@@ -707,20 +763,10 @@ const setToChangeVariebles = (
 ) => {
   setTimeout(() => {
     if (!isColorInStrip({ r, g, b })) {
-      let coord = findColorCoordinates();
-      if (coord) {
-        pickerPointer.value.style.left = `${coord.x}px`;
-        pickerPointer.value.style.top = `${coord.y}px`;
-      }
       hue.value = hueVal;
       setHue(isNotUpdate);
-    } else {
-      let coord = findColorCoordinates();
-      if (coord) {
-        pickerPointer.value.style.left = `${coord.x}px`;
-        pickerPointer.value.style.top = `${coord.y}px`;
-      }
     }
+    updatePointerFromModelValue();
   }, 0);
 };
 
@@ -732,11 +778,7 @@ const setFirstEmptyValue = () => {
   hue.value = clr.hue;
   setHue(true);
 
-  let coord = findColorCoordinates();
-  if (coord) {
-    pickerPointer.value.style.left = `${coord.x}px`;
-    pickerPointer.value.style.top = `${coord.y}px`;
-  }
+  updatePointerFromModelValue();
   setOpacityBarColor();
   setGradientBarColor();
 };
@@ -952,18 +994,9 @@ const handleOnClickEyeDropper = () => {
           hue.value = hueVal;
           const { rgb } = hsl2Hex(hueVal, 100, 50);
           redrawTheCanvas(rgb);
-          const coord = findColorCoordinates();
-          if (coord) {
-            pickerPointer.value.style.left = `${coord.x}px`;
-            pickerPointer.value.style.top = `${coord.y}px`;
-          }
-        } else {
-          const coord = findColorCoordinates();
-          if (coord) {
-            pickerPointer.value.style.left = `${coord.x}px`;
-            pickerPointer.value.style.top = `${coord.y}px`;
-          }
         }
+
+        updatePointerFromModelValue();
 
         onChangeSetToHexValue();
         setOpacityBarColor();
@@ -1433,6 +1466,7 @@ watch(
     if (newValue !== oldValue && newValue !== emittedValue.value) {
       clearGradient();
       applyValue(newValue);
+      updatePointerFromModelValue();
     }
   }
 );
@@ -1455,10 +1489,29 @@ onMounted(() => {
         ".gradient-bar"
       ) as HTMLElement;
     }
+
+    if (typeof ResizeObserver !== "undefined" && pickerWrap.value) {
+      pointerResizeObserver?.disconnect();
+      pointerResizeObserver = new ResizeObserver(() => {
+        updatePointerFromModelValue();
+      });
+      pointerResizeObserver.observe(pickerWrap.value);
+    }
+
     applyValue(props.modelValue as string);
     handleChangeInputType(inputType.value);
     isReady.value = true;
+    updatePointerFromModelValue();
   })
+});
+
+onBeforeUnmount(() => {
+  if (pointerUpdateFrame !== null) {
+    cancelAnimationFrame(pointerUpdateFrame);
+    pointerUpdateFrame = null;
+  }
+  pointerResizeObserver?.disconnect();
+  pointerResizeObserver = null;
 });
 </script>
 
