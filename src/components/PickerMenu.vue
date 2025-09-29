@@ -175,5 +175,3 @@ const handleChangePickerMode = () => {
   emits("onPickerChangeMode", props.mode == "gradient" ? "solid" : "gradient");
 };
 </script>
-
-<style lang="scss" scoped></style>

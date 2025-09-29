@@ -53,11 +53,9 @@
     "eslint": "^8.54.0",
     "eslint-plugin-vue": "^9.19.2",
     "path": "^0.12.7",
-    "sass": "^1.69.5",
-    "typescript": "^5.2.2",
+    "typescript": "~5.4.5",
     "vite": "^5.0.0",
     "vite-plugin-dts": "^3.6.4",
     "vue-tsc": "^1.8.22"
-  },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  }
 }

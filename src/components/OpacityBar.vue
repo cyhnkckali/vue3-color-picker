@@ -27,5 +27,3 @@ const handleInput = (event: Event) => {
   emits("onInput", event);
 };
 </script>
-
-<style lang="scss" scoped></style>

@@ -1515,7 +1515,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss">
+<style>
 :root {
   --cp-gray-100: #f9f9f9;
   --cp-gray-200: #f1f1f4;
@@ -1573,9 +1573,9 @@ onBeforeUnmount(() => {
 }
 
 .ck-cp-controller-bar {
-  // height: 35px;
-  // background-color: #f1f1f1;
-  // margin-top: 0.5rem;
+  /* height: 35px; */
+  /* background-color: #f1f1f1; */
+  /* margin-top: 0.5rem; */
   border-radius: 0.475rem;
   display: flex;
   align-items: center;
@@ -1673,56 +1673,56 @@ onBeforeUnmount(() => {
       #0000ff 67%,
       #ff00ff 83%,
       #ff0000 100%);
+}
 
-  &:focus {
-    outline: none;
-  }
+.picker-hue-range-slider:focus {
+  outline: none;
+}
 
-  &:active,
-  &:hover:active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-  }
+.picker-hue-range-slider:active,
+.picker-hue-range-slider:hover:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
 
-  &::-moz-range-track {
-    appearance: none;
-    opacity: 0;
-    outline: none;
-  }
+.picker-hue-range-slider::-moz-range-track {
+  appearance: none;
+  opacity: 0;
+  outline: none;
+}
 
-  &::-ms-track {
-    outline: none;
-    appearance: none;
-    opacity: 0;
-  }
+.picker-hue-range-slider::-ms-track {
+  outline: none;
+  appearance: none;
+  opacity: 0;
+}
 
-  &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.picker-hue-range-slider::-webkit-slider-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
 
-  &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.picker-hue-range-slider::-moz-range-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .picker-opacity-slider {
@@ -1744,56 +1744,56 @@ onBeforeUnmount(() => {
   display: block;
   outline: none;
   transition: color 0.05s linear;
+}
 
-  &:focus {
-    outline: none;
-  }
+.opacity_slider:focus {
+  outline: none;
+}
 
-  &:active,
-  &:hover:active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-  }
+.opacity_slider:active,
+.opacity_slider:hover:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
 
-  &::-moz-range-track {
-    appearance: none;
-    opacity: 0;
-    outline: none;
-  }
+.opacity_slider::-moz-range-track {
+  appearance: none;
+  opacity: 0;
+  outline: none;
+}
 
-  &::-ms-track {
-    outline: none;
-    appearance: none;
-    opacity: 0;
-  }
+.opacity_slider::-ms-track {
+  outline: none;
+  appearance: none;
+  opacity: 0;
+}
 
-  &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.opacity_slider::-webkit-slider-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
 
-  &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.opacity_slider::-moz-range-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .gradient-bar {
@@ -1842,7 +1842,6 @@ onBeforeUnmount(() => {
   position: relative;
   height: 8px;
   overflow: visible;
-
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -1864,7 +1863,7 @@ onBeforeUnmount(() => {
 .ck-cp-linear-angle-container {
   padding: var(--padding);
   margin-bottom: calc(var(--margin-top) * 1.75);
-  // margin: 1rem 0 2rem 0;
+  /* margin: 1rem 0 2rem 0; */
 }
 
 .ck-cp-linear-angle-container input[type="range"] {
@@ -1878,56 +1877,56 @@ onBeforeUnmount(() => {
   display: block;
   outline: none;
   transition: color 0.05s linear;
+}
 
-  &:focus {
-    outline: none;
-  }
+.ck-cp-linear-angle-container input[type="range"]:focus {
+  outline: none;
+}
 
-  &:active,
-  &:hover:active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-  }
+.ck-cp-linear-angle-container input[type="range"]:active,
+.ck-cp-linear-angle-container input[type="range"]:hover:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
 
-  &::-moz-range-track {
-    appearance: none;
-    opacity: 0;
-    outline: none;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-moz-range-track {
+  appearance: none;
+  opacity: 0;
+  outline: none;
+}
 
-  &::-ms-track {
-    outline: none;
-    appearance: none;
-    opacity: 0;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-ms-track {
+  outline: none;
+  appearance: none;
+  opacity: 0;
+}
 
-  &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-webkit-slider-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
 
-  &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-moz-range-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .ck-cp-linear-angle-container .ck-gradient-set-label {
@@ -2030,7 +2029,6 @@ onBeforeUnmount(() => {
   gap: 12px;
   padding: 0px 10px 0px 10px;
   border-top: 1px solid var(--cp-gray-200);
-
   padding-top: calc(var(--margin-top) * 1.25);
   margin-top: calc(var(--margin-top) * 2);
 }
@@ -2111,23 +2109,23 @@ onBeforeUnmount(() => {
   flex-direction: row;
   justify-content: flex-end;
   column-gap: 4px;
+}
 
-  &__button {
-    font-size: 12px;
-    padding: 5px 15px;
-    background-color: var(--cp-container-bg);
-    border: none;
-    color: var(--cp-gray-800);
-    border-radius: 5px;
+.ck-cp-buttons__button {
+  font-size: 12px;
+  padding: 5px 15px;
+  background-color: var(--cp-container-bg);
+  border: none;
+  color: var(--cp-gray-800);
+  border-radius: 5px;
+}
 
-    &:hover {
-      cursor: pointer;
-      background-color: var(--cp-gray-100);
-    }
+.ck-cp-buttons__button:hover {
+  cursor: pointer;
+  background-color: var(--cp-gray-100);
+}
 
-    &:active {
-      background-color: var(--cp-gray-100);
-    }
-  }
+.ck-cp-buttons__button:active {
+  background-color: var(--cp-gray-100);
 }
 </style>
