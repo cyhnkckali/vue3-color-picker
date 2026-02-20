@@ -217,6 +217,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  emitOnUserActionOnly: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const pickerTemplateRef = ref<HTMLElement | null>(null);
@@ -233,12 +237,21 @@ const PickerMode = ref(props.mode);
 const localValue = ref(props.modelValue);
 const emittedValue = ref(props.modelValue);
 
+// When emitOnUserActionOnly is true, this flag suppresses emits during
+// programmatic updates (watch-triggered prop changes and initial mount).
+// It is set before programmatic paths and cleared after all async callbacks complete.
+const _suppressEmit = ref(false);
+
 const emitUpdateModelValue = (value: string) => {
   localValue.value = value;
-  emits("onChange", value);
+  if (!_suppressEmit.value) {
+    emits("onChange", value);
+  }
   if (!props.showButtons) {
-    emittedValue.value = value;
-    emits("update:modelValue", value);
+    if (!_suppressEmit.value) {
+      emittedValue.value = value;
+      emits("update:modelValue", value);
+    }
   }
 };
 
@@ -1431,8 +1444,21 @@ watch(
   () => props.modelValue as string,
   (newValue: string, oldValue: string) => {
     if (newValue !== oldValue && newValue !== emittedValue.value) {
+      if (props.emitOnUserActionOnly) {
+        _suppressEmit.value = true;
+      }
       clearGradient();
       applyValue(newValue);
+      if (props.emitOnUserActionOnly) {
+        // Clear after all pending macrotasks from applyValue chain.
+        // Uses nested setTimeout because setToChangeVariebles → setHue
+        // chain uses two levels of setTimeout(0).
+        setTimeout(() => {
+          setTimeout(() => {
+            _suppressEmit.value = false;
+          }, 0);
+        }, 0);
+      }
     }
   }
 );
@@ -1455,9 +1481,20 @@ onMounted(() => {
         ".gradient-bar"
       ) as HTMLElement;
     }
+    if (props.emitOnUserActionOnly) {
+      _suppressEmit.value = true;
+    }
     applyValue(props.modelValue as string);
     handleChangeInputType(inputType.value);
     isReady.value = true;
+    if (props.emitOnUserActionOnly) {
+      // Clear after all pending macrotasks from the applyValue chain complete
+      setTimeout(() => {
+        setTimeout(() => {
+          _suppressEmit.value = false;
+        }, 0);
+      }, 0);
+    }
   })
 });
 </script>

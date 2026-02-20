@@ -91,6 +91,7 @@ import {Vue3ColorPicker} from '@cyhnkckali/vue3-color-picker';
 | `iconClasses` | `object` | default `{ ruler: '', eyeDroper: '', arrowDown: '', save: '', delete: '' }` |
 | `gradientMode` | `linear` or `radial` | default `linear` Sets the initial gradient mode when the picker is started |
 | `showButtons` | `boolean` | default `true` |
+| `emitOnUserActionOnly` | `boolean` | default `false` When `true`, `update:modelValue` and `onChange` only emit for user interactions (clicks, drags, typing). Programmatic changes to `modelValue` update the picker visually but do not emit back, preventing feedback loops. |
 
 
 ## Emits
