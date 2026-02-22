@@ -69,4 +69,9 @@ export interface Vue3ColorPickerProps {
   iconClasses: IconClasses;
   gradientMode: GradientMode;
   showButtons: boolean;
+  /** When true, `update:modelValue` and `onChange` only emit for user-initiated
+   *  interactions (clicks, drags, typing). Programmatic changes to `modelValue`
+   *  (e.g. from a backend or parent component) will update the picker visually
+   *  but will NOT emit back. This prevents feedback loops. Default: false. */
+  emitOnUserActionOnly: boolean;
 }
