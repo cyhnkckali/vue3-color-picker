@@ -212,58 +212,40 @@ const rgbToHsl = (
   g: number,
   b: number
 ): { h: number; s: number; l: number } => {
-  let min: number,
-    max: number,
-    i: number,
-    l: number,
-    s: number,
-    maxcolor: number,
-    h: number = 0,
-    rgb: number[] = [];
-  rgb[0] = r / 255;
-  rgb[1] = g / 255;
-  rgb[2] = b / 255;
-  min = rgb[0];
-  max = rgb[0];
-  maxcolor = 0;
-  for (i = 0; i < rgb.length - 1; i++) {
-    if (rgb[i + 1] <= min) {
-      min = rgb[i + 1];
-    }
-    if (rgb[i + 1] >= max) {
-      max = rgb[i + 1];
-      maxcolor = i + 1;
-    }
-  }
-  if (maxcolor === 0) {
-    h = (rgb[1] - rgb[2]) / (max - min);
-  }
-  if (maxcolor === 1) {
-    h = 2 + (rgb[2] - rgb[0]) / (max - min);
-  }
-  if (maxcolor === 2) {
-    h = 4 + (rgb[0] - rgb[1]) / (max - min);
+  const nr = r / 255;
+  const ng = g / 255;
+  const nb = b / 255;
+
+  const max = Math.max(nr, ng, nb);
+  const min = Math.min(nr, ng, nb);
+  const l = (max + min) / 2;
+
+  if (max === min) {
+    return { h: 0, s: 0, l };
   }
 
-  if (isNaN(h)) {
-    h = 0;
+  const delta = max - min;
+  const s = l < 0.5 ? delta / (max + min) : delta / (2 - max - min);
+
+  let h: number;
+  switch (max) {
+    case nr:
+      h = (ng - nb) / delta;
+      break;
+    case ng:
+      h = 2 + (nb - nr) / delta;
+      break;
+    default:
+      h = 4 + (nr - ng) / delta;
+      break;
   }
-  h = h * 60;
+
+  h *= 60;
   if (h < 0) {
-    h = h + 360;
+    h += 360;
   }
-  l = (min + max) / 2;
-  if (min === max) {
-    s = 0;
-  } else {
-    if (l < 0.5) {
-      s = (max - min) / (max + min);
-    } else {
-      s = (max - min) / (2 - max - min);
-    }
-  }
-  s = s;
-  return { h: h, s: s, l: l };
+
+  return { h, s, l };
 };
 const hslToRgb = (h: number, s: number, l: number) => {
   // Hue değerini 0 ile 360 arasına dönüştürün (istenirse 0 ile 1 arasında olabilir)

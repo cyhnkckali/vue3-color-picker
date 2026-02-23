@@ -41,5 +41,3 @@ const handleDoubleTouch = (e: TouchEvent) => {
 
 
 </script>
-
-<style lang="scss" scoped></style>

@@ -35,5 +35,3 @@ const handleClick = () => {
   emits("onChangeInputName", type);
 };
 </script>
-
-<style lang="scss"></style>

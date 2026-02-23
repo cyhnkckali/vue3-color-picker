@@ -24,5 +24,3 @@ const handleItemDragStart = (e: MouseEvent) => {
   e.preventDefault();
 };
 </script>
-
-<style lang="scss" scoped></style>

@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, provide, watch, nextTick } from "vue";
+import { onMounted, onBeforeUnmount, ref, reactive, provide, watch, nextTick } from "vue";
 
 import PickerMenu from "./PickerMenu.vue";
 import GradientBar from "./GradientBar.vue";
@@ -292,6 +292,9 @@ let offsetX = 0;
 let offsetY = 0;
 let BottomPoint = 0;
 let RightPoint = 0;
+let pointerUpdateFrame: number | null = null;
+let pointerResizeObserver: ResizeObserver | null = null;
+let pointerRetryCount = 0;
 
 const handlePickerStartOnMouseDown = (event: MouseEvent | TouchEvent) => {
   if (!pickerWrap.value || !pickerPointer.value) return;
@@ -432,42 +435,95 @@ const calculateSL = () => {
   return obj;
 };
 
-const findColorCoordinates = () => {
+const findColorCoordinates = (
+  bounds?: { rightLine: number; bottomLine: number }
+) => {
   const targetColor = colorList.value.find((item) => item.select == true);
-
-  if (targetColor) {
-    const { l, s } = rgbToHsl(targetColor.r, targetColor.g, targetColor.b);
-    let lightness = l;
-    let saturation = s;
-
-    if (Number.isNaN(saturation)) {
-      saturation = lightness;
-    }
-
-    let coordinates = { x: 0, y: 0 };
-    let rightLine =
-      pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
-    let bottomLine =
-      pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
-
-    const [posx_inv, posy_inv] =
-      2 * lightness - 1 < 0
-        ? [
-          (rightLine * 2 * saturation) / (1 + saturation),
-          bottomLine * (1 - lightness * (1 + saturation)),
-        ]
-        : [
-          (-rightLine * 2 * (lightness - 1) * saturation) /
-          (lightness + saturation - lightness * saturation),
-          bottomLine * (lightness - 1) * (saturation - 1),
-        ];
-
-    coordinates.x = posx_inv;
-    coordinates.y = posy_inv;
-    return coordinates;
-  } else {
+  if (
+    !targetColor ||
+    !pickerWrap.value ||
+    !pickerPointer.value
+  ) {
     return null;
   }
+
+  const { l, s } = rgbToHsl(targetColor.r, targetColor.g, targetColor.b);
+  let lightness = l;
+  let saturation = s;
+
+  if (Number.isNaN(saturation)) {
+    saturation = lightness;
+  }
+
+  const rightLine =
+    bounds?.rightLine ??
+    pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
+  const bottomLine =
+    bounds?.bottomLine ??
+    pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
+
+  if (rightLine <= 0 || bottomLine <= 0) {
+    return null;
+  }
+
+  const [posx_inv, posy_inv] =
+    2 * lightness - 1 < 0
+      ? [
+        (rightLine * 2 * saturation) / (1 + saturation),
+        bottomLine * (1 - lightness * (1 + saturation)),
+      ]
+      : [
+        (-rightLine * 2 * (lightness - 1) * saturation) /
+        (lightness + saturation - lightness * saturation),
+        bottomLine * (lightness - 1) * (saturation - 1),
+      ];
+
+  return { x: posx_inv, y: posy_inv };
+};
+
+const updatePointerFromModelValue = () => {
+  if (!pickerWrap.value || !pickerPointer.value) {
+    return;
+  }
+
+  const rightLine =
+    pickerWrap.value.offsetWidth - pickerPointer.value.offsetWidth;
+  const bottomLine =
+    pickerWrap.value.offsetHeight - pickerPointer.value.offsetHeight;
+
+  if (rightLine <= 0 || bottomLine <= 0) {
+    if (pointerRetryCount < 5 && pointerUpdateFrame === null) {
+      pointerRetryCount += 1;
+      pointerUpdateFrame = requestAnimationFrame(() => {
+        pointerUpdateFrame = null;
+        updatePointerFromModelValue();
+      });
+    }
+    return;
+  }
+
+  pointerRetryCount = 0;
+
+  if (pointerUpdateFrame !== null) {
+    cancelAnimationFrame(pointerUpdateFrame);
+    pointerUpdateFrame = null;
+  }
+
+  const coordinates = findColorCoordinates({ rightLine, bottomLine });
+  if (!coordinates) {
+    return;
+  }
+
+  const clampedX = Math.min(Math.max(coordinates.x, 0), rightLine);
+  const clampedY = Math.min(Math.max(coordinates.y, 0), bottomLine);
+
+  pickerPointer.value.style.left = `${clampedX}px`;
+  pickerPointer.value.style.top = `${clampedY}px`;
+
+  divX = clampedX;
+  divY = clampedY;
+  RightPoint = rightLine;
+  BottomPoint = bottomLine;
 };
 
 const handleHueChange = () => {
@@ -706,20 +762,10 @@ const setToChangeVariebles = (
 ) => {
   setTimeout(() => {
     if (!isColorInStrip({ r, g, b })) {
-      let coord = findColorCoordinates();
-      if (coord) {
-        pickerPointer.value.style.left = `${coord.x}px`;
-        pickerPointer.value.style.top = `${coord.y}px`;
-      }
       hue.value = hueVal;
       setHue(isNotUpdate);
-    } else {
-      let coord = findColorCoordinates();
-      if (coord) {
-        pickerPointer.value.style.left = `${coord.x}px`;
-        pickerPointer.value.style.top = `${coord.y}px`;
-      }
     }
+    updatePointerFromModelValue();
   }, 0);
 };
 
@@ -731,11 +777,7 @@ const setFirstEmptyValue = () => {
   hue.value = clr.hue;
   setHue(true);
 
-  let coord = findColorCoordinates();
-  if (coord) {
-    pickerPointer.value.style.left = `${coord.x}px`;
-    pickerPointer.value.style.top = `${coord.y}px`;
-  }
+  updatePointerFromModelValue();
   setOpacityBarColor();
   setGradientBarColor();
 };
@@ -951,18 +993,9 @@ const handleOnClickEyeDropper = () => {
           hue.value = hueVal;
           const { rgb } = hsl2Hex(hueVal, 100, 50);
           redrawTheCanvas(rgb);
-          const coord = findColorCoordinates();
-          if (coord) {
-            pickerPointer.value.style.left = `${coord.x}px`;
-            pickerPointer.value.style.top = `${coord.y}px`;
-          }
-        } else {
-          const coord = findColorCoordinates();
-          if (coord) {
-            pickerPointer.value.style.left = `${coord.x}px`;
-            pickerPointer.value.style.top = `${coord.y}px`;
-          }
         }
+
+        updatePointerFromModelValue();
 
         onChangeSetToHexValue();
         setOpacityBarColor();
@@ -1432,6 +1465,7 @@ watch(
     if (newValue !== oldValue && newValue !== emittedValue.value) {
       clearGradient();
       applyValue(newValue);
+      updatePointerFromModelValue();
     }
   }
 );
@@ -1454,14 +1488,33 @@ onMounted(() => {
         ".gradient-bar"
       ) as HTMLElement;
     }
+
+    if (typeof ResizeObserver !== "undefined" && pickerWrap.value) {
+      pointerResizeObserver?.disconnect();
+      pointerResizeObserver = new ResizeObserver(() => {
+        updatePointerFromModelValue();
+      });
+      pointerResizeObserver.observe(pickerWrap.value);
+    }
+
     applyValue(props.modelValue as string);
     handleChangeInputType(inputType.value);
     isReady.value = true;
+    updatePointerFromModelValue();
   })
+});
+
+onBeforeUnmount(() => {
+  if (pointerUpdateFrame !== null) {
+    cancelAnimationFrame(pointerUpdateFrame);
+    pointerUpdateFrame = null;
+  }
+  pointerResizeObserver?.disconnect();
+  pointerResizeObserver = null;
 });
 </script>
 
-<style lang="scss">
+<style>
 :root {
   --cp-gray-100: #f9f9f9;
   --cp-gray-200: #f1f1f4;
@@ -1519,9 +1572,9 @@ onMounted(() => {
 }
 
 .ck-cp-controller-bar {
-  // height: 35px;
-  // background-color: #f1f1f1;
-  // margin-top: 0.5rem;
+  /* height: 35px; */
+  /* background-color: #f1f1f1; */
+  /* margin-top: 0.5rem; */
   border-radius: 0.475rem;
   display: flex;
   align-items: center;
@@ -1619,56 +1672,56 @@ onMounted(() => {
       #0000ff 67%,
       #ff00ff 83%,
       #ff0000 100%);
+}
 
-  &:focus {
-    outline: none;
-  }
+.picker-hue-range-slider:focus {
+  outline: none;
+}
 
-  &:active,
-  &:hover:active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-  }
+.picker-hue-range-slider:active,
+.picker-hue-range-slider:hover:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
 
-  &::-moz-range-track {
-    appearance: none;
-    opacity: 0;
-    outline: none;
-  }
+.picker-hue-range-slider::-moz-range-track {
+  appearance: none;
+  opacity: 0;
+  outline: none;
+}
 
-  &::-ms-track {
-    outline: none;
-    appearance: none;
-    opacity: 0;
-  }
+.picker-hue-range-slider::-ms-track {
+  outline: none;
+  appearance: none;
+  opacity: 0;
+}
 
-  &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.picker-hue-range-slider::-webkit-slider-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
 
-  &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.picker-hue-range-slider::-moz-range-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .picker-opacity-slider {
@@ -1690,56 +1743,56 @@ onMounted(() => {
   display: block;
   outline: none;
   transition: color 0.05s linear;
+}
 
-  &:focus {
-    outline: none;
-  }
+.opacity_slider:focus {
+  outline: none;
+}
 
-  &:active,
-  &:hover:active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-  }
+.opacity_slider:active,
+.opacity_slider:hover:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
 
-  &::-moz-range-track {
-    appearance: none;
-    opacity: 0;
-    outline: none;
-  }
+.opacity_slider::-moz-range-track {
+  appearance: none;
+  opacity: 0;
+  outline: none;
+}
 
-  &::-ms-track {
-    outline: none;
-    appearance: none;
-    opacity: 0;
-  }
+.opacity_slider::-ms-track {
+  outline: none;
+  appearance: none;
+  opacity: 0;
+}
 
-  &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.opacity_slider::-webkit-slider-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
 
-  &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.opacity_slider::-moz-range-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .gradient-bar {
@@ -1788,7 +1841,6 @@ onMounted(() => {
   position: relative;
   height: 8px;
   overflow: visible;
-
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -1810,7 +1862,7 @@ onMounted(() => {
 .ck-cp-linear-angle-container {
   padding: var(--padding);
   margin-bottom: calc(var(--margin-top) * 1.75);
-  // margin: 1rem 0 2rem 0;
+  /* margin: 1rem 0 2rem 0; */
 }
 
 .ck-cp-linear-angle-container input[type="range"] {
@@ -1824,56 +1876,56 @@ onMounted(() => {
   display: block;
   outline: none;
   transition: color 0.05s linear;
+}
 
-  &:focus {
-    outline: none;
-  }
+.ck-cp-linear-angle-container input[type="range"]:focus {
+  outline: none;
+}
 
-  &:active,
-  &:hover:active {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-  }
+.ck-cp-linear-angle-container input[type="range"]:active,
+.ck-cp-linear-angle-container input[type="range"]:hover:active {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
 
-  &::-moz-range-track {
-    appearance: none;
-    opacity: 0;
-    outline: none;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-moz-range-track {
+  appearance: none;
+  opacity: 0;
+  outline: none;
+}
 
-  &::-ms-track {
-    outline: none;
-    appearance: none;
-    opacity: 0;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-ms-track {
+  outline: none;
+  appearance: none;
+  opacity: 0;
+}
 
-  &::-webkit-slider-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-webkit-slider-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
+}
 
-  &::-moz-range-thumb {
-    box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
-    border: 1px solid var(--cp-range-border);
-    background-color: var(--cp-primary);
-    height: 14px;
-    width: 14px;
-    border-radius: 50%;
-    appearance: none;
-    cursor: pointer;
-    cursor: move;
-    cursor: grab;
-    cursor: -webkit-grab;
-  }
+.ck-cp-linear-angle-container input[type="range"]::-moz-range-thumb {
+  box-shadow: 0px -0px 6px 0px var(--cp-range-shadow);
+  border: 1px solid var(--cp-range-border);
+  background-color: var(--cp-primary);
+  height: 14px;
+  width: 14px;
+  border-radius: 50%;
+  appearance: none;
+  cursor: pointer;
+  cursor: move;
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .ck-cp-linear-angle-container .ck-gradient-set-label {
@@ -1976,7 +2028,6 @@ onMounted(() => {
   gap: 12px;
   padding: 0px 10px 0px 10px;
   border-top: 1px solid var(--cp-gray-200);
-
   padding-top: calc(var(--margin-top) * 1.25);
   margin-top: calc(var(--margin-top) * 2);
 }
@@ -2057,23 +2108,23 @@ onMounted(() => {
   flex-direction: row;
   justify-content: flex-end;
   column-gap: 4px;
+}
 
-  &__button {
-    font-size: 12px;
-    padding: 5px 15px;
-    background-color: var(--cp-container-bg);
-    border: none;
-    color: var(--cp-gray-800);
-    border-radius: 5px;
+.ck-cp-buttons__button {
+  font-size: 12px;
+  padding: 5px 15px;
+  background-color: var(--cp-container-bg);
+  border: none;
+  color: var(--cp-gray-800);
+  border-radius: 5px;
+}
 
-    &:hover {
-      cursor: pointer;
-      background-color: var(--cp-gray-100);
-    }
+.ck-cp-buttons__button:hover {
+  cursor: pointer;
+  background-color: var(--cp-gray-100);
+}
 
-    &:active {
-      background-color: var(--cp-gray-100);
-    }
-  }
+.ck-cp-buttons__button:active {
+  background-color: var(--cp-gray-100);
 }
 </style>
