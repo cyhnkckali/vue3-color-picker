@@ -1,6 +1,6 @@
 {
   "name": "@cyhnkckali/vue3-color-picker",
-  "version": "2.1.5",
+  "version": "2.1.7",
   "description": "A color picker component library",
   "type": "module",
   "types": "./dist/index.d.ts",
@@ -12,9 +12,9 @@
   "module": "./dist/vue3-color-picker.js",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/vue3-color-picker.js",
-      "require": "./dist/vue3-color-picker.umd.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/vue3-color-picker.umd.cjs"
     },
     "./dist/style.css": {
       "import": "./dist/style.css",
@@ -49,13 +49,16 @@
     "vue": "^3.3.8"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.5.0",
-    "eslint": "^8.54.0",
-    "eslint-plugin-vue": "^9.19.2",
+    "@types/node": "^25.3.0",
+    "@vitejs/plugin-vue": "^6.0.4",
+    "@vue/compiler-sfc": "^3.3.8",
+    "eslint": "^9.39.3",
+    "eslint-plugin-vue": "^9.33.0",
     "path": "^0.12.7",
-    "typescript": "^5.4.5",
-    "vite": "^5.0.0",
-    "vite-plugin-dts": "^3.6.4",
-    "vue-tsc": "^1.8.22"
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.5.4",
+    "vue": "^3.3.8",
+    "vue-tsc": "^3.2.5"
   }
 }

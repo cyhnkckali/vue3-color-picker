@@ -1,7 +1,7 @@
 {
   "name": "demo",
   "private": true,
-  "version": "2.1.2",
+  "version": "2.1.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cyhnkckali/vue3-color-picker": "^2.1.2",
+    "@cyhnkckali/vue3-color-picker": "^2.1.7",
     "@popperjs/core": "^2.11.8",
     "bootstrap": "^5.3.2",
     "vue": "^3.3.8"

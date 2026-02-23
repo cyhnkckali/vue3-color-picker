@@ -1,7 +1,14 @@
 <template>
   <div class="opacity-bar">
-    <input ref="opacitySlider" :value="modelValue" class="opacity_slider" type="range" min="0" max="100"
-      @input="handleInput" />
+    <input
+      ref="opacitySlider"
+      :value="modelValue"
+      class="opacity_slider"
+      type="range"
+      min="0"
+      max="100"
+      @input="handleInput"
+    />
   </div>
 </template>
 
@@ -12,6 +19,7 @@ defineProps({
   modelValue: { default: 0, type: Number },
 });
 
+// @ts-ignore
 const opacitySlider = inject<Ref>("opacitySlider");
 
 const emits = defineEmits<{
@@ -22,7 +30,7 @@ const emits = defineEmits<{
 const handleInput = (event: Event) => {
   emits(
     "update:modelValue",
-    parseInt((event.target as HTMLInputElement).value)
+    parseInt((event.target as HTMLInputElement).value),
   );
   emits("onInput", event);
 };
